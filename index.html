@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.6.7/axios.min.js" integrity="sha512-NQfB/bDaB8kaSXF8E77JjhHG5PM6XVRxvHzkZiwl3ddWCEPBa23T76MuWSwAJdMGJnmQqM0VeY9kFszsrBEFrQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <title>Document</title>
+</head>
+<body>
+
+    <input type="email" name="" id="email" placeholder="email">
+    <input type="password" id="password" placeholder="password">
+    <button id="Login">Login </button>
+    <button id="Register">Register </button>
+</body>
+<script >
+    console.log("Running");
+
+    
+    
+    const loginButton = document.getElementById("Login");
+    const registerButton = document.getElementById("Register");
+
+    loginButton.onclick = ()=> {
+        const emailTextField = document.getElementById("email").value
+        const passwordTextField = document.getElementById("password").value;
+        console.log(emailTextField, passwordTextField)
+        axios.post('http://localhost:3000/electrohub/api/v1/login', {
+            email: `${emailTextField}`,
+            password: `${passwordTextField}`
+        })
+        .then(function (response) {
+            console.log(response);
+        })
+        .catch(function (error) {
+            console.log(error);
+        });
+    }
+    
+
+
+</script>
+</html>
