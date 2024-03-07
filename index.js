@@ -31,11 +31,7 @@ app.use("*",(req,res,next)=>{
 })
 
 
-mongoose.connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    tls: false, // Disable SSL validation
-}).then(() => {
+mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log("Connected to DB Successfully!!");
     app.listen(3000, (req, res) => {
         console.log("Listening on port 3000");
