@@ -15,6 +15,7 @@ const cloudinary = require("../utils/cloudinary")
 const { error } = require("console");
 const cors = require("cors")
 const Merchants = require("../model/merchant")
+const Carts = require("../model/cart")
 app.use(cors())
 
 
@@ -508,7 +509,6 @@ const deleteSpecificImageFromStoreSlider = async (req,res) =>{
     console.log(1)
     const email = req.params.email;
     const url = req.body.url;
-    
     // console.log(email)
     const specificStore = await Merchants.findOne({email:email})
     // console.log(specificStore);
@@ -524,6 +524,186 @@ const deleteSpecificImageFromStoreSlider = async (req,res) =>{
       
     console.log(await Merchants.find({email:email}))
     res.send({Result: "Category Deleted Successfully!!"})
+}
+
+const testSpecificCart = async(req,res)=>{
+    try {
+        const email = req.params.email
+        // Extract necessary information from the request body
+        const { cartPrimaryImage ,cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite} = req.body;
+
+        // Find the merchant using the provided email
+        const merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        // Create a new cart using the cart information from the request
+        const newCart = new Carts({
+
+            cartName,
+            cartPrice,
+            cartDiscount,
+            cartLiked,
+            cartPrimaryImage,
+            cartPriceAfterDiscount,
+            cartSecondaryImagesSlider,
+            cartDescription,
+            cartCategory,
+            cartFavourite,
+            merchant: merchant._id, // Associate the cart with the merchant
+        });
+
+        // Save the new cart
+        await newCart.save();
+
+        // Update the merchant's type array with the new cart's ObjectId
+        merchant.type.push(newCart._id);
+        await merchant.save();
+
+        res.status(201).json({ message: "Cart added to merchant successfully", cart: newCart });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+        
+}
+
+const testGetMerchantCart = async(req,res)=>{
+    try {
+        
+        const email = req.params.email
+        // Find the merchant using the provided email
+        const merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+
+        res.status(201).json( merchantsWithCarts[0] );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const testGetMerchantCartContent = async (req,res)=>{
+    res.send(await Carts.find({}))
+}
+
+const cartUploadPrimaryImage = async(req,res)=>{
+    console.log("test")
+    var email = req.body.email;
+    var index = req.body.index;
+    // console.log(email,index)
+    const user = await Merchants.findOne({email:email}).populate("type");
+    // console.log(user)
+     cloudinary.uploader.upload(req.file.path, async function(err, result)  {
+        // console.log(err)
+        if(err){
+            console.log(err);
+            return res.status(500).send({
+                success: false,
+                message: "Error"
+            })
+        }
+        // var imageUrl = result.url;
+        console.log(result.url)
+        const cartId = user.type[index]._id;
+        const cart = await Carts.findByIdAndUpdate(cartId, {
+            cartPrimaryImage: result.url,
+          });
+        
+        res.status(200).send({
+            success: true,
+            message: "Uploaded",
+            data: user,
+            email:email,
+        })
+    })
+    // console.log(req.file.path)
+    // res.send({ status: "Success" });
+}
+
+const activateStoreSlider = async(req,res)=>{
+    try{
+        const {activateSlider} = req.body;
+        console.log(activateSlider);
+
+        const filter = { email: req.params.email };
+        console.log(filter)
+        const update = { activateSlider: activateSlider,};
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        console.log(Merchants)
+        console.log(update)
+        const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
+        
+        console.log(updatedMerchantProfile)
+        if (!updatedMerchantProfile) {
+            // Handle the case where the merchant with the given email was not found
+            return res.status(404).send({ Message: "Merchant not found" });
+        }
+        ////////////
+        res.status(200).send({Message: "Your profile data updated successfuly!"})
+    }catch(error){
+        console.error(error);
+        res.status(500).send({Error:error})
+    }
+}
+
+const activateStoreCategory = async(req,res)=>{
+    try{
+        const {activateCategory} = req.body;
+        console.log(activateCategory);
+
+        const filter = { email: req.params.email };
+        console.log(filter)
+        const update = { activateCategory: activateCategory,};
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        console.log(Merchants)
+        console.log(update)
+        const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
+        
+        console.log(updatedMerchantProfile)
+        if (!updatedMerchantProfile) {
+            // Handle the case where the merchant with the given email was not found
+            return res.status(404).send({ Message: "Merchant not found" });
+        }
+        ////////////
+        res.status(200).send({Message: "Your profile data updated successfuly!"})
+    }catch(error){
+        console.error(error);
+        res.status(500).send({Error:error})
+    }
+}
+
+const activateStoreCarts = async(req,res)=>{
+    try{
+        const {activateCarts} = req.body;
+        console.log(activateCarts);
+
+        const filter = { email: req.params.email };
+        console.log(filter)
+        const update = { activateCarts: activateCarts,};
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        console.log(Merchants)
+        console.log(update)
+        const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
+        
+        console.log(updatedMerchantProfile)
+        if (!updatedMerchantProfile) {
+            // Handle the case where the merchant with the given email was not found
+            return res.status(404).send({ Message: "Merchant not found" });
+        }
+        ////////////
+        res.status(200).send({Message: "Your profile data updated successfuly!"})
+    }catch(error){
+        console.error(error);
+        res.status(500).send({Error:error})
+    }
 }
 
 module.exports = {
@@ -550,5 +730,13 @@ module.exports = {
     deleteSpecificStoreCategories,
     updateSpecificStoreCategories,
     deleteSpecificImageFromStoreSlider,
+    testSpecificCart,
+    testGetMerchantCart,
+    testGetMerchantCartContent,
+    cartUploadPrimaryImage,
+    activateStoreSlider,
+    activateStoreCategory,
+    activateStoreCarts,
+
 
 }

@@ -78,8 +78,26 @@ const merchantSchema = new mongoose.Schema({
     },
     specificStoreCategories:{
         type:[String],
+        default:["All Products"]
     },
-    
+    activateSlider:{
+        type:Boolean,
+        default:true,
+    },
+    activateCategory:{
+        type:Boolean,
+        default:true,
+    },
+    activateCarts:{
+        type:Boolean,
+        default:true,
+    },
+    type: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Carts"
+        }
+    ]
     
 
 });
