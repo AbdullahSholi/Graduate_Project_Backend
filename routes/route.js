@@ -72,6 +72,7 @@ router.delete("/matjarcom/api/v1/delete-specific-store-categories/:email", contr
 router.patch("/matjarcom/api/v1/update-specific-store-categories/:email", controller.updateSpecificStoreCategories)
 router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email", controller.deleteSpecificImageFromStoreSlider)
 
+
 // Activator
 
 router.patch("/matjarcom/api/v1/activate-store-slider/:email", controller.activateStoreSlider)
@@ -86,6 +87,10 @@ router.post("/matjarcom/api/v1/test-specific-cart/:email", controller.testSpecif
 router.get("/matjarcom/api/v1/test-get-merchant-cart/:email", controller.testGetMerchantCart)
 router.get("/matjarcom/api/v1/test-get-merchant-cart-content/:email", controller.testGetMerchantCartContent) // for display all carts
 router.post("/matjarcom/api/v1/cart-upload-primary-image", upload.single("avatar"), controller.cartUploadPrimaryImage)
+router.post("/matjarcom/api/v1/cart-upload-secondary-images", upload.single("avatar"), controller.cartUploadSecondaryImages)
+router.delete("/matjarcom/api/v1/delete-specific-image-from-cart-image-slider/:email", controller.deleteSpecificImageFromCartImageSlider)
+router.patch("/matjarcom/api/v1/test-update-specific-cart/:email", controller.testUpdateSpecificCart)
+router.delete("/matjarcom/api/v1/delete-cart/:email", controller.deleteCart)
 
 
 module.exports = router

@@ -530,7 +530,7 @@ const testSpecificCart = async(req,res)=>{
     try {
         const email = req.params.email
         // Extract necessary information from the request body
-        const { cartPrimaryImage ,cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite} = req.body;
+        const { cartPrimaryImage ,cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite, cartQuantities} = req.body;
 
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -552,6 +552,7 @@ const testSpecificCart = async(req,res)=>{
             cartDescription,
             cartCategory,
             cartFavourite,
+            cartQuantities,
             merchant: merchant._id, // Associate the cart with the merchant
         });
 
@@ -706,6 +707,107 @@ const activateStoreCarts = async(req,res)=>{
     }
 }
 
+const cartUploadSecondaryImages = async (req,res)=>{
+    {
+        console.log("test")
+        var email = req.body.email;
+        var index = req.body.index;
+        // console.log(email,index)
+        const user = await Merchants.findOne({email:email}).populate("type");
+        // console.log(user)
+         cloudinary.uploader.upload(req.file.path, async function(err, result)  {
+            // console.log(err)
+            if(err){
+                console.log(err);
+                return res.status(500).send({
+                    success: false,
+                    message: "Error"
+                })
+            }
+            // var imageUrl = result.url;
+            console.log(result.url)
+            const cartId = user.type[index]._id;
+            const cart = await Carts.findByIdAndUpdate(cartId, {
+                $push: {cartSecondaryImagesSlider: result.url},
+              });
+            
+            res.status(200).send({
+                success: true,
+                message: "Uploaded",
+                data: user,
+                email:email,
+            })
+        })
+        // console.log(req.file.path)
+        // res.send({ status: "Success" });
+    }
+}
+
+const deleteSpecificImageFromCartImageSlider = async(req,res)=>{
+    console.log(1)
+    const email = req.params.email;
+    const url = req.body.url;
+    const index = req.body.index;
+    
+    
+    const specificStore = await Merchants.findOne({email:email}).populate("type")
+    // console.log(specificStore);
+    const cartId = specificStore.type[index]._id;
+            const cart = await Carts.findByIdAndUpdate(cartId, {
+                $pull: {cartSecondaryImagesSlider: url},
+              });
+      
+    console.log(await Carts.findById(cartId))
+    res.send({Result: "Category Deleted Successfully!!"})
+}
+
+
+const testUpdateSpecificCart = async (req,res)=>{
+    try{
+        const {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index} = req.body;
+        const merchant = await Merchants.findOne({email:req.params.email}).populate("type");
+        console.log(index)
+        const update = {  type:[{
+            cartName: cartName,
+             cartPrice: cartPrice,
+              cartDiscount: cartDiscount,
+               cartLiked: cartLiked,
+                cartFavourite:cartFavourite,
+                 cartDescription: cartDescription,
+                  cartCategory: cartCategory,
+                  cartQuantities: cartQuantities,
+        }] };
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        console.log(update)
+        
+        const cartId = merchant.type[index]._id;
+        const cart = await Carts.findByIdAndUpdate(cartId,update.type[0], options);
+
+        
+        // console.log(cart);
+        ////////////
+        res.status(200).send({Message: "Your profile data updated successfuly!"})
+    }catch(error){
+        console.error(error);
+        res.status(500).send({Error:error})
+    }
+}
+
+const deleteCart = async (req,res)=>{
+    console.log(1)
+    const email = req.params.email;
+    const index = req.body.index;
+    
+    
+    const specificStore = await Merchants.findOne({email:email}).populate("type")
+    // console.log(specificStore);
+    const cartId = specificStore.type[index]._id;
+            const cart = await Carts.findByIdAndDelete(cartId);
+      
+    console.log(await Carts.find({}))
+    res.send({Result: "Cart Deleted Successfully!!"})
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -737,6 +839,10 @@ module.exports = {
     activateStoreSlider,
     activateStoreCategory,
     activateStoreCarts,
+    cartUploadSecondaryImages,
+    deleteSpecificImageFromCartImageSlider,
+    testUpdateSpecificCart,
+    deleteCart,
 
 
 }

@@ -12,7 +12,7 @@ const cartSchema = new mongoose.Schema({
     cartPrice:{
         type:Number,
         required:true,
-        default:"test"
+
     },
     cartDiscount:{
         type:Boolean,
@@ -28,7 +28,7 @@ const cartSchema = new mongoose.Schema({
     },
     cartPrimaryImage:{
         type:String,
-        // default:""
+        default:"https://th.bing.com/th/id/OIP.gP1tVKJUehx7kX43qmrSswHaHa?w=176&h=180&c=7&r=0&o=5&pid=1.7"
     },
     cartRate:{
         type:Number,
@@ -40,6 +40,7 @@ const cartSchema = new mongoose.Schema({
     },
     cartSecondaryImagesSlider:{
         type:[String],
+        default:["https://th.bing.com/th/id/OIP.gP1tVKJUehx7kX43qmrSswHaHa?w=176&h=180&c=7&r=0&o=5&pid=1.7"]
     },
     cartDescription:{
         type:String,
@@ -47,6 +48,11 @@ const cartSchema = new mongoose.Schema({
     cartCategory:{
         type: String,
         default: "All Products"
+    },
+    cartQuantities:{
+        type: Number,
+        required:true,
+        default:10,
     },
 
     merchant: {
