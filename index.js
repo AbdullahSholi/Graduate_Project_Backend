@@ -19,7 +19,6 @@ app.use(cors())
 app.use(express.json())
 app.use(router)
 
-console.log(process.env.MONGO_URL)
 
 app.get("/test",(req,res)=>{
     res.send("Test Success");

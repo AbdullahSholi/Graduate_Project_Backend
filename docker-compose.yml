@@ -1,0 +1,25 @@
+version: '3'
+
+services:
+  graduate-project-backend:
+    build:
+      context: .
+      target: production
+    volumes:
+      - ./controllers:/app/controllers:ro
+      - ./model:/app/model:ro
+      - ./routes:/app/routes:ro
+      - ./uploads:/app/uploads:ro
+      - ./utils:/app/utils:ro
+      - ./package.json:/app/package.json:rw
+
+    ports:
+      - '3000:3000'
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+      - MONGO_URL=mongodb+srv://groupgroup00003:Sholi%40971@cluster0.emalawk.mongodb.net/Graduate_Project_Database
+      - JWT_SECRET=Sholi@971
+      - CLOUDINARY_CLOUD_NAME=dsuaio9tv
+      - CLOUDINARY_API_KEY=534939317537342
+      - CLOUDINARY_SECRET_KEY=jWauFJsCDnJQm2HpcymfZQeSUOA

@@ -226,7 +226,7 @@ const merchantLogin = async (req,res)=>{
         }
 
         
-
+        console.log(process.env.JWT_SECRET);
         // Generate JWT token
         const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
 
