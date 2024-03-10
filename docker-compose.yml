@@ -2,6 +2,7 @@ version: '3'
 
 services:
   graduate-project-backend:
+    image: abdullahsholi/graduate-project-backend
     build:
       context: .
       target: production
