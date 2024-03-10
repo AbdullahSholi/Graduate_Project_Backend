@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    
+    <link rel="icon" href="https://th.bing.com/th/id/OIP.mnsVT_mhLzTpZWy2n_gVdwHaHa?rs=1&pid=ImgDetMain" type="image/">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loading Page</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f8f8f8;
+        }
+
+        .loader-container {
+            text-align: center;
+        }
+
+        .loader {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            position: relative;
+            border: 10px solid #3498db;
+            animation: spin 1.5s linear infinite;
+            border-top-color: #e74c3c;
+            border-bottom-color: #e74c3c;
+            border-radius: 50%;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        p {
+            font-size: 18px;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <div class="loader-container">
+        <div class="loader"></div>
+        <p>We will be here soon, Be ready...</p>
+    </div>
+</body>
+</html>

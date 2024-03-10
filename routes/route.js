@@ -42,6 +42,15 @@ const authenticateToken = (req, res, next) => {
 
 // create router
 const router = express.Router()
+
+
+// First Screen loader
+router.get("/matjarcom/api/v1/",(req,res)=>{
+    setTimeout(() => {
+        res.render('index');
+    }, 2000);
+})
+
  
 
 // routes

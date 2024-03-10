@@ -19,14 +19,21 @@ app.use(cors())
 app.use(express.json())
 app.use(router)
 
+// ejs 
+app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views');
 
 app.get("/test",(req,res)=>{
     res.send("Test Success");
 })
 
 app.use("/electrohub/api/v1/uploads", express.static(path.join("uploads")));
+
+
 app.use("*",(req,res,next)=>{
-    res.send("Not Found")
+    setTimeout(() => {
+        res.render('index');
+    }, 2000);
 })
 
 
