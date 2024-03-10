@@ -1,0 +1,6 @@
+
+
+services:
+  - name: graduate-proj
+    env: node
+    image: abdullahsholi/graduate-project-backend:latest
