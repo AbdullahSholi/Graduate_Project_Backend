@@ -14,15 +14,11 @@ const port = 3000
 
 app.use(cors())
 
-console.log("Containerized . . . . .  . . . . . ")
-
 // app.use ( middleware )
 app.use(express.json())
 app.use(router)
 
-// ejs 
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
+
 
 app.get("/test",(req,res)=>{
     res.send("Test Success tttttttttttttttttttttttttt");
@@ -32,9 +28,7 @@ app.use("/electrohub/api/v1/uploads", express.static(path.join("uploads")));
 
 
 app.use("*",(req,res,next)=>{
-    setTimeout(() => {
-        res.render('index');
-    }, 2000);
+    res.send("Home Page")
 })
 
 

@@ -44,12 +44,6 @@ const authenticateToken = (req, res, next) => {
 const router = express.Router()
 
 
-// First Screen loader
-router.get("/matjarcom/api/v1/",(req,res)=>{
-   
-    res.render('index');
-    
-})
 
  
 
