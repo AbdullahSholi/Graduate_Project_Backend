@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enchanted Forest Loading</title>
+    <style>
+        /* Enchanted forest background */
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #0a0a0a; /* Dark night sky color */
+            font-family: 'Arial', sans-serif;
+        }
+
+        .firefly {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #f9e84a; /* Warm yellow glow */
+            border-radius: 50%;
+            animation: flicker 2s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 100% {
+                background-color: #f9e84a; /* Start and end with warm yellow */
+                opacity: 0.8;
+                transform: scale(10);
+            }
+            50% {
+                background-color: #ffd700; /* Transition to a brighter yellow */
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Centered loading text */
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: #fff;
+            font-size: 24px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Fireflies -->
+    <script>
+      function getRandomPercentage() {
+          return Math.floor(Math.random() * 100) + '%';
+      }
+
+      for (let i = 0; i < 10; i++) {
+          const firefly = document.createElement('div');
+          firefly.className = 'firefly';
+          firefly.style.top = getRandomPercentage();
+          firefly.style.left = getRandomPercentage();
+          document.body.appendChild(firefly);
+      }
+  </script>
+    <!-- Add more fireflies as desired -->
+
+    <!-- Loading text -->
+    <div class="loading-text">
+      <h1>Be Ready, We will be here soon...</h1>
+    </div>
+
+    <!-- Your EJS content goes here -->
+    <!-- Replace this with your actual content -->
+    <div>
+        <h1></h1>
+        <!-- Add more elements as needed -->
+    </div>
+</body>
+</html>
