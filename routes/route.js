@@ -78,6 +78,7 @@ router.post("/matjarcom/api/v1/specific-store-categories/:email", controller.spe
 router.delete("/matjarcom/api/v1/delete-specific-store-categories/:email", controller.deleteSpecificStoreCategories)
 router.patch("/matjarcom/api/v1/update-specific-store-categories/:email", controller.updateSpecificStoreCategories)
 router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email", controller.deleteSpecificImageFromStoreSlider)
+router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email", controller.deleteCategoryConnectedToCarts)
 
 
 // Activator

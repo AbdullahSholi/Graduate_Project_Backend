@@ -285,25 +285,51 @@ const merchantRegister = async (req, res) => {
 
 const merchantUpdate = async (req, res)=>{
     try{
-        const {email,merchantname, password, phone, country} = req.body;
-        console.log(merchantname, password,phone, country);
+        const emailParams = req.params.email
+        console.log(emailParams)
+        // Get Origin Data from DB
+        const merchant = await Merchants.find({email: emailParams})
+        console.log(merchant[0]);
+        // var emailDB = merchant[0].email;
+        var merchantnameDB = merchant[0].merchantname;
+        var passwordDB = merchant[0].password;
+        var phoneDB = merchant[0].phone;
+        var countryDB = merchant[0].country;
+
+        var hashedPassword0 = await bcrypt.hash(passwordDB, 10);
+        
+        console.log(merchantnameDB, hashedPassword0, phoneDB, countryDB);
+
+        // Get Data Coming from Client 
+
+        var {merchantname, password, phone, country} = req.body;
+        // console.log(merchantname, password,phone, country);
         // Hash the password before saving it to the database
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        console.log(merchantname, hashedPassword, phone, country);
+        
         ////////////
-        const filter = { email: req.params.email };
-        console.log(filter)
-        const update = { merchantname: merchantname, email: email, password: hashedPassword, phone: phone, country: country};
-        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
-        console.log(Merchants)
+        const filter = { email: emailParams };
+        
+        const update = { merchantname: merchantname.trim() != "" ? merchantnameDB = merchantname : merchantnameDB = merchantnameDB, 
+        password: password.trim() != "" ? hashedPassword0 = hashedPassword : hashedPassword0= hashedPassword0,
+        phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
+        country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
+    };
+
         console.log(update)
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        
+        
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
         
-        console.log(updatedMerchantProfile)
+        
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
-        ////////////
+        //////////
         res.status(200).send({Message: "Your profile data updated successfuly!"})
     }catch(error){
         console.error(error);
@@ -360,11 +386,33 @@ const uploadStoreAvatar = async (req, res) => {
 
 const updateStoreInformation = async (req,res)=>{
     try{
+
+        const emailParams = req.params.email
+        console.log(emailParams)
+
+        // Get Origin Data from DB
+        const merchant = await Merchants.find({email: emailParams})
+        console.log(merchant[0]);
+        // var emailDB = merchant[0].email;
+        var storeNameDB = merchant[0].storeName;
+        var storeCategoryDB = merchant[0].storeCategory;
+        var storeDescriptionDB = merchant[0].storeDescription;
+        
+        console.log(storeNameDB, storeCategoryDB, storeDescriptionDB);
+
+        /////////////////////////////
+
         console.log(req.body)
         const {storeName,storeCategory, storeDescription } = req.body;
         
         const filter = { email: req.params.email };
-        const update = { storeName: storeName, storeCategory: storeCategory, storeDescription: storeDescription };
+
+
+        const update = { storeName: storeName.trim() != "" ? storeNameDB = storeName : storeNameDB = storeNameDB, 
+        storeCategory: storeCategory.trim() != "" ? storeCategoryDB = storeCategory : storeCategoryDB = storeCategoryDB,
+        storeDescription: storeDescription.trim() != "" ? storeDescriptionDB = storeDescription : storeDescriptionDB = storeDescriptionDB,
+        };
+
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
 
         const updatedUserProfile = await Merchants.findOneAndUpdate(filter, update, options);
@@ -373,6 +421,11 @@ const updateStoreInformation = async (req,res)=>{
     }catch(error){
         res.status(500).send({Error:error})
     }
+
+    ///////////////////////
+    
+
+    ////////////////
 }
 
 
@@ -765,35 +818,83 @@ const deleteSpecificImageFromCartImageSlider = async(req,res)=>{
 }
 
 
+function isEmptyString(value) {
+    return typeof value === 'string' && value.trim() === '';
+  }
+
+
 const testUpdateSpecificCart = async (req,res)=>{
+
+    ///////////////
     try{
-        const {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index} = req.body;
-        const merchant = await Merchants.findOne({email:req.params.email}).populate("type");
-        console.log(index)
-        const update = {  type:[{
-            cartName: cartName,
-             cartPrice: cartPrice,
-              cartDiscount: cartDiscount,
-               cartLiked: cartLiked,
-                cartFavourite:cartFavourite,
-                 cartDescription: cartDescription,
-                  cartCategory: cartCategory,
-                  cartQuantities: cartQuantities,
-        }] };
-        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
-        console.log(update)
+        const emailParams = req.params.email
+        console.log(emailParams)
+        // Get Origin Data from DB
+        const merchant = await Merchants.findOne({email: emailParams}).populate("type")
+        console.log(merchant.type[0]);
+        // var emailDB = merchant[0].email;
         
-        const cartId = merchant.type[index]._id;
-        const cart = await Carts.findByIdAndUpdate(cartId,update.type[0], options);
+        var cartNameDB = merchant.type[0].cartName;
+        var cartPriceDB = merchant.type[0].cartPrice;
+        var cartDiscountDB = merchant.type[0].cartDiscount;
+        var cartLikedDB = merchant.type[0].cartLiked;
+        var cartFavouriteDB = merchant.type[0].cartFavourite;
+        var cartDescriptionDB = merchant.type[0].cartDescription;
+        var cartCategoryDB = merchant.type[0].cartCategory;
+        var cartQuantitiesDB = merchant.type[0].cartQuantities;
+        
+        
+        console.log(cartNameDB);
+        console.log(cartPriceDB);
+        console.log(cartDiscountDB);
+        console.log(cartLikedDB);
+        console.log(cartFavouriteDB);
+        console.log(cartDescriptionDB);
+        console.log(cartCategoryDB);
+        console.log(cartQuantitiesDB);
+
+        // Get Data Coming from Client 
+
+        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index} = req.body;
+       
 
         
-        // console.log(cart);
         ////////////
+        const filter = { email: emailParams };
+        
+        const update = {  
+            cartName: cartName.trim() != "" ? cartNameDB = cartName : cartNameDB = cartNameDB, 
+            cartPrice: cartPrice != "" ? cartPriceDB = parseFloat(cartPrice) : cartPriceDB = cartPriceDB, 
+            cartDescription: cartDescription.trim() != "" ? cartDescriptionDB = cartDescription : cartDescriptionDB = cartDescriptionDB, 
+            cartCategory: cartCategory.trim() != "" ? cartCategoryDB = cartCategory : cartCategoryDB = cartCategoryDB, 
+            cartQuantities: cartQuantities != "" ? cartQuantitiesDB = parseInt(cartQuantities) : cartQuantitiesDB = cartQuantitiesDB, 
+            cartDiscount: cartDiscount,
+            cartLiked: cartLiked, 
+            cartFavourite: cartFavourite,
+        
+         };
+
+        console.log(update)
+        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        
+            const cartId = merchant.type[index]._id;
+        
+        const updatedMerchantProfile = await Carts.findOneAndUpdate(cartId, update, options);
+        
+        
+        if (!updatedMerchantProfile) {
+            // Handle the case where the merchant with the given email was not found
+            return res.status(404).send({ Message: "Merchant not found" });
+        }
+        ////////
         res.status(200).send({Message: "Your profile data updated successfuly!"})
     }catch(error){
         console.error(error);
         res.status(500).send({Error:error})
     }
+
+
+
 }
 
 const deleteCart = async (req,res)=>{
@@ -809,6 +910,44 @@ const deleteCart = async (req,res)=>{
       
     console.log(await Carts.find({}))
     res.send({Result: "Cart Deleted Successfully!!"})
+}
+
+
+const deleteCategoryConnectedToCarts = async (req,res)=>{
+
+    console.log(1)
+    const email = req.params.email;
+    const index = req.body.index;
+    
+    console.log(email, index)
+    
+    const specificStore = await Merchants.findOne({email:email}).populate("type")
+    // console.log(specificStore);
+    console.log(specificStore.type)
+    for(i=0; i < specificStore.type.length; i++){
+        if(specificStore.type[i].cartCategory == specificStore.specificStoreCategories[index]){
+            const cartId = specificStore.type[i]._id;
+            const cart = await Carts.findByIdAndDelete(cartId);
+            await Merchants.updateOne(
+                {email:email},
+                { $pull: { type: {$in: [specificStore.type[i]]} } },
+                { new: true },
+                
+              );
+        }
+    }
+    
+
+    const specificCategory = await Merchants.findOne({email:email})
+    await Merchants.updateOne(
+        {email:email},
+        { $pull: { specificStoreCategories: {$in: [specificCategory.specificStoreCategories[index]]} } },
+        { new: true },
+        
+      );
+      
+    // console.log(await Merchants.find({email:email}))
+    res.send({Result: "Category Deleted Successfully!!"})
 }
 
 module.exports = {
@@ -846,6 +985,7 @@ module.exports = {
     deleteSpecificImageFromCartImageSlider,
     testUpdateSpecificCart,
     deleteCart,
+    deleteCategoryConnectedToCarts,
 
 
 }
