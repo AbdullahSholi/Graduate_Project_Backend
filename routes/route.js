@@ -68,36 +68,36 @@ router.get("/matjarcom/api/v1/profile/:email",authenticateToken,controller.getUs
 // for Merchants login & register & update 
 router.post("/matjarcom/api/v1/merchant-login",controller.merchantLogin)
 router.post("/matjarcom/api/v1/merchant-register",controller.merchantRegister)
-router.patch("/matjarcom/api/v1/merchant-update/:email",controller.merchantUpdate)
-router.get("/matjarcom/api/v1/merchant-profile/:email",controller.merchantProfile);
-router.post("/matjarcom/api/v1/store-avatar", upload.single("avatar"), controller.uploadStoreAvatar)
-router.patch("/matjarcom/api/v1/update-store-informations/:email",controller.updateStoreInformation)
-router.patch("/matjarcom/api/v1/connect-social-media-accounts/:email",controller.connectSocialMediaAccounts)
-router.post("/matjarcom/api/v1/store-slider-images", upload.single("avatar"), controller.storeSliderImages)
-router.post("/matjarcom/api/v1/specific-store-categories/:email", controller.specificStoreCategories)
-router.delete("/matjarcom/api/v1/delete-specific-store-categories/:email", controller.deleteSpecificStoreCategories)
-router.patch("/matjarcom/api/v1/update-specific-store-categories/:email", controller.updateSpecificStoreCategories)
-router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email", controller.deleteSpecificImageFromStoreSlider)
-router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email", controller.deleteCategoryConnectedToCarts)
+router.patch("/matjarcom/api/v1/merchant-update/:email",authenticateToken,controller.merchantUpdate)
+router.get("/matjarcom/api/v1/merchant-profile/:email",authenticateToken,controller.merchantProfile);
+router.post("/matjarcom/api/v1/store-avatar", upload.single("avatar"),authenticateToken, controller.uploadStoreAvatar)
+router.patch("/matjarcom/api/v1/update-store-informations/:email",authenticateToken,controller.updateStoreInformation)
+router.patch("/matjarcom/api/v1/connect-social-media-accounts/:email",authenticateToken,controller.connectSocialMediaAccounts)
+router.post("/matjarcom/api/v1/store-slider-images", upload.single("avatar"),authenticateToken, controller.storeSliderImages)
+router.post("/matjarcom/api/v1/specific-store-categories/:email",authenticateToken, controller.specificStoreCategories)
+router.delete("/matjarcom/api/v1/delete-specific-store-categories/:email",authenticateToken, controller.deleteSpecificStoreCategories)
+router.patch("/matjarcom/api/v1/update-specific-store-categories/:email",authenticateToken, controller.updateSpecificStoreCategories)
+router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email",authenticateToken, controller.deleteSpecificImageFromStoreSlider)
+router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email",authenticateToken, controller.deleteCategoryConnectedToCarts)
 
 
 // Activator
 
-router.patch("/matjarcom/api/v1/activate-store-slider/:email", controller.activateStoreSlider)
-router.patch("/matjarcom/api/v1/activate-store-category/:email", controller.activateStoreCategory)
-router.patch("/matjarcom/api/v1/activate-store-carts/:email", controller.activateStoreCarts)
+router.patch("/matjarcom/api/v1/activate-store-slider/:email",authenticateToken, controller.activateStoreSlider)
+router.patch("/matjarcom/api/v1/activate-store-category/:email",authenticateToken, controller.activateStoreCategory)
+router.patch("/matjarcom/api/v1/activate-store-carts/:email",authenticateToken, controller.activateStoreCarts)
 
 
 
 
 // For store carts
-router.post("/matjarcom/api/v1/test-specific-cart/:email", controller.testSpecificCart)
-router.get("/matjarcom/api/v1/test-get-merchant-cart/:email", controller.testGetMerchantCart)
-router.get("/matjarcom/api/v1/test-get-merchant-cart-content/:email", controller.testGetMerchantCartContent) // for display all carts
-router.post("/matjarcom/api/v1/cart-upload-primary-image", upload.single("avatar"), controller.cartUploadPrimaryImage)
-router.post("/matjarcom/api/v1/cart-upload-secondary-images", upload.single("avatar"), controller.cartUploadSecondaryImages)
-router.delete("/matjarcom/api/v1/delete-specific-image-from-cart-image-slider/:email", controller.deleteSpecificImageFromCartImageSlider)
-router.patch("/matjarcom/api/v1/test-update-specific-cart/:email", controller.testUpdateSpecificCart)
+router.post("/matjarcom/api/v1/test-specific-cart/:email",authenticateToken, controller.testSpecificCart)
+router.get("/matjarcom/api/v1/test-get-merchant-cart/:email",authenticateToken, controller.testGetMerchantCart)
+router.get("/matjarcom/api/v1/test-get-merchant-cart-content/:email",authenticateToken, controller.testGetMerchantCartContent) // for display all carts
+router.post("/matjarcom/api/v1/cart-upload-primary-image", upload.single("avatar"),authenticateToken, controller.cartUploadPrimaryImage)
+router.post("/matjarcom/api/v1/cart-upload-secondary-images", upload.single("avatar"),authenticateToken, controller.cartUploadSecondaryImages)
+router.delete("/matjarcom/api/v1/delete-specific-image-from-cart-image-slider/:email",authenticateToken, controller.deleteSpecificImageFromCartImageSlider)
+router.patch("/matjarcom/api/v1/test-update-specific-cart/:email",authenticateToken, controller.testUpdateSpecificCart)
 router.delete("/matjarcom/api/v1/delete-cart/:email", controller.deleteCart)
 
 
