@@ -16,6 +16,7 @@ const { error } = require("console");
 const cors = require("cors")
 const Merchants = require("../model/merchant")
 const Carts = require("../model/cart")
+const Store = require("../model/store")
 app.use(cors())
 
 
@@ -950,6 +951,137 @@ const deleteCategoryConnectedToCarts = async (req,res)=>{
     res.send({Result: "Category Deleted Successfully!!"})
 }
 
+
+const merchantAddStoreToDatabase = async (req,res)=>{
+    try {
+        const emailParams = req.params.email
+        // Extract necessary information from the request body
+        const { merchantname, email, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, activateSlider, activateCategory, activateCarts, specificStoreCategories, type} = req.body.stores;
+    //    console.log(req.body.stores)
+       console.log("--------------------------")
+       console.log("--------------------------")
+       console.log("--------------------------")
+
+        // Find the existing document
+        let storeDocument = await Store.findOne({}); // Assuming there's only one document
+        
+        // If no document found, create a new one
+        if (!storeDocument) {
+            storeDocument = new Store(
+
+            );
+            console.log("Store Created!!")
+        }
+        let counter = 0; 
+        // console.log(storeDocument.stores)
+        // console.log("--------------------------")
+        // console.log("--------------------------")
+
+        for(let i = 0; i<storeDocument.stores.length; i++){
+            if(storeDocument.stores[i].email == emailParams){
+                counter++;
+            } else{
+                counter=0;
+            }
+        }
+        console.log(counter)
+        if(counter != 0){
+            if(counter == 1){
+                console.log(emailParams)
+                const tempStore = await Store.findOne({});
+                // console.log(tempStore.stores)
+                for(let i=0; i<tempStore.stores.length; i++){
+                    if(tempStore.stores[i].email == emailParams){
+
+                        let foundObject = tempStore.stores.find(obj => obj.email === emailParams);
+                        if (foundObject) {
+                            foundObject.merchantname= merchantname;
+                            foundObject.email= emailParams;
+                            foundObject.phone= phone;
+                            foundObject.country =country;
+                            foundObject.Avatar = Avatar;
+                            foundObject.storeName = storeName;
+                            foundObject.storeAvatar = storeAvatar;
+                            foundObject.storeCategory = storeCategory;
+                            foundObject.storeSliderImages = storeSliderImages;
+                            foundObject.storeProductImages = storeProductImages;
+                            foundObject.storeDescription = storeDescription;
+                            foundObject.storeSocialMediaAccounts = storeSocialMediaAccounts;
+                            foundObject.activateSlider = activateSlider;
+                            foundObject.activateCategory = activateCategory;
+                            foundObject.activateCarts = activateCarts;
+                            foundObject.specificStoreCategories=specificStoreCategories,
+                            // foundObject.type = type,
+                            console.log("---------==")
+                            console.log(foundObject)
+                            Store.findOneAndUpdate(
+                                {email: emailParams},
+                                { $set: { "stores": foundObject } },
+                                { new: true },
+                            )
+                            console.log("Object updated successfully!");
+                        } else {
+                            console.log("Object with specified ID not found!");
+                        }
+                       
+                        await tempStore.save();
+                        res.send({Message: "This store data is exist, You can update it"}) 
+                    } 
+                }
+                
+                     
+            } else
+            res.send({Message: "This store data is exist"})
+        } 
+        else{
+        // Push the new store object into the stores array
+        console.log("PPPPPPPPPPPPPPPPPPPP")
+        console.log(req.body.stores)
+        console.log("PPPPPPPPPPPPPPPPPPPP")
+    
+        storeDocument.stores.push(
+            {
+            merchantname: merchantname,
+            email: emailParams,
+            phone: phone,
+            country: country,
+            Avatar: Avatar,
+            storeName: storeName,
+            storeAvatar: storeAvatar,
+            storeCategory: storeCategory,
+            storeSliderImages: storeSliderImages,
+            storeProductImages: storeProductImages,
+            storeDescription: storeDescription,
+            storeSocialMediaAccounts: storeSocialMediaAccounts,
+            activateSlider: activateSlider,
+            activateCategory: activateCategory,
+            activateCarts: activateCarts, 
+            specificStoreCategories: specificStoreCategories,
+            // type: type,
+        }
+        );
+
+        // Save the document
+        await storeDocument.save();
+               
+      
+        
+
+        res.status(201).json({ message: "Cart added to List of Stores successfully" });
+    }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const getAllStores = async (req,res)=>{
+    const stores = await Store.find({});
+    
+    res.send(stores[0].stores);
+}
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -986,6 +1118,8 @@ module.exports = {
     testUpdateSpecificCart,
     deleteCart,
     deleteCategoryConnectedToCarts,
+    merchantAddStoreToDatabase,
+    getAllStores
 
 
 }

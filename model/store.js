@@ -3,29 +3,28 @@ const mongoose = require("mongoose")
 
 // User schema and model
 const storeSchema = new mongoose.Schema({
-    storeName: {
-        type: String,
-        required: true,
-        unique: true,
-        minLength: 3,
-        maxLength:20,
-        lowercase: true,
-        trim:true,
-    },
-    
-    storeAvatar:{
-        type: String,
-        default: "http://res.cloudinary.com/dsuaio9tv/image/upload/v1708109280/blctf7fxgqai2t8p2lck.png",
-    },
-    storeCategory:{
-        type: String,
-    },
-    storeSliderImages:{
-        type: [String]
-    },
-    storeProductImages:{
-        type: [String]
-    }
+    stores: [{
+        merchantname: String,
+        email: String,
+        phone: String,
+        country: String,
+        Avatar: String,
+        storeName: String,
+        storeAvatar: String,
+        storeCategory: String,
+        storeSliderImages: [String],
+        storeProductImages: [String],
+        storeDescription: String,
+        storeSocialMediaAccounts: [String],
+        activateSlider: Boolean,
+        activateCategory: Boolean,
+        specificStoreCategories:[String],
+        activateCarts: Boolean,
+        // type: [String],
+        
+        
+        
+    }]
 
 });
 

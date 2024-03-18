@@ -79,6 +79,7 @@ router.delete("/matjarcom/api/v1/delete-specific-store-categories/:email",authen
 router.patch("/matjarcom/api/v1/update-specific-store-categories/:email",authenticateToken, controller.updateSpecificStoreCategories)
 router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email",authenticateToken, controller.deleteSpecificImageFromStoreSlider)
 router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email",authenticateToken, controller.deleteCategoryConnectedToCarts)
+router.post("/matjarcom/api/v1/merchant-add-store-to-database/:email", controller.merchantAddStoreToDatabase)
 
 
 // Activator
@@ -100,5 +101,7 @@ router.delete("/matjarcom/api/v1/delete-specific-image-from-cart-image-slider/:e
 router.patch("/matjarcom/api/v1/test-update-specific-cart/:email",authenticateToken, controller.testUpdateSpecificCart)
 router.delete("/matjarcom/api/v1/delete-cart/:email", controller.deleteCart)
 
+// Guest ( Display List of Stores  )
+router.get("/matjarcom/api/v1/get-all-stores/",controller.getAllStores)
 
 module.exports = router
