@@ -7,12 +7,15 @@ const path = require("path");
 const multer = require("multer");
 const { error } = require("console");
 const cors = require("cors")
+const helmet = require("helmet");
+
 require("dotenv").config()
 
 const app = express()
 const port = 3000
 
 app.use(cors())
+app.use(helmet());
 
 // app.use ( middleware )
 app.use(express.json())
