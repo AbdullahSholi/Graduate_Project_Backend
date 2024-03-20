@@ -25,7 +25,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.1.1",
     "multer": "^1.4.5-lts.1",
-    "nodemon": "^3.0.3",
+    "nodemon": "^3.1.0",
     "passport-facebook": "^3.0.0"
   }
 }
