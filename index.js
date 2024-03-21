@@ -8,11 +8,37 @@ const multer = require("multer");
 const { error } = require("console");
 const cors = require("cors")
 const helmet = require("helmet");
+const { RateLimiterMemory } = require('rate-limiter-flexible');
+const rateLimit = require('express-rate-limit');
+
 
 require("dotenv").config()
 
 const app = express()
 const port = 3000
+
+const rateLimiter = new RateLimiterMemory({
+    points: 10, // maximum number of requests allowed
+    duration: 1, // time frame in seconds
+  });
+  const rateLimiterMiddleware = (req, res, next) => {
+     rateLimiter.consume(req.ip)
+        .then(() => {
+            // request allowed, 
+            // proceed with handling the request
+            next();
+        })
+        .catch(() => {
+            // request limit exceeded, 
+            // respond with an appropriate error message
+            res.status(429).send('Too Many Requests');
+        });
+     };
+
+app.use(rateLimiterMiddleware);
+
+
+
 
 app.use(cors())
 app.use(helmet());

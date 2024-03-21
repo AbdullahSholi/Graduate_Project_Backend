@@ -5,6 +5,7 @@ const app = express()
 const controller = require("../controllers/controller")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const rateLimit = require('express-rate-limit');
 
 const { error } = require("console")
 const upload = require("../controllers/controller").upload
@@ -64,6 +65,16 @@ router.post("/matjarcom/api/v1/register",controller.register)
 router.patch("/matjarcom/api/v1/update-user-profile/:email",authenticateToken,controller.updateUserProfile)
 router.post("/matjarcom/api/v1/avatar", upload.single("avatar"), controller.uploadfile)
 router.get("/matjarcom/api/v1/profile/:email",authenticateToken,controller.getUserProfile)
+
+
+/////////////////////
+// Apply rate limiting middleware
+const loginLimiter = rateLimit({
+    windowMs: 60 * 1000, // 15 minutes
+    max: 3, // Max 5 failed attempts
+    message: 'Too many login attempts, please try again after 60 seconds',
+  });
+router.use('/matjarcom/api/v1/merchant-login', loginLimiter);
 
 // for Merchants login & register & update 
 router.post("/matjarcom/api/v1/merchant-login",controller.merchantLogin)
