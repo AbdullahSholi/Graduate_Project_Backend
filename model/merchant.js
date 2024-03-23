@@ -56,6 +56,9 @@ const merchantSchema = new mongoose.Schema({
     storeSliderImages:{
         type: [String]
     },
+
+
+    
     storeProductImages:{
         type: [String]
     }, 
