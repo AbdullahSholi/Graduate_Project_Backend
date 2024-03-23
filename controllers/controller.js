@@ -1020,12 +1020,14 @@ const merchantAddStoreToDatabase = async (req,res)=>{
                                 { new: true },
                             )
                             console.log("Object updated successfully!");
+                            await tempStore.save();
+                            return res.send({Message: "This store data is exist, You can update it"})
                         } else {
                             console.log("Object with specified ID not found!");
+                            return res.send({Message: "Object with specified ID not found!"});
                         }
                        
-                        await tempStore.save();
-                        res.send({Message: "This store data is exist, You can update it"}) 
+                         
                     } 
                 }
                 
@@ -1081,6 +1083,54 @@ const getAllStores = async (req,res)=>{
     res.send(stores[0].stores);
 }
 
+const getAllStoresForOneCategory = async (req,res)=>{
+    const storeCategory = req.params.storeCategory;
+    const stores = await Store.find();
+    var tempStores = stores[0].stores.filter(element=> element.storeCategory == storeCategory)
+    res.send(tempStores)
+}
+
+const storeData = async (req,res)=>{
+    try{
+        console.log(req.params.email)
+        const merchant = await Merchants.findOne({email:req.params.email});
+        console.log(merchant);
+        res.status(200).send(merchant);
+    }
+    catch(err){
+        res.status(500).send({Message: err})
+    }
+}
+
+const testGetStoreCart = async (req,res)=>{
+    try {
+        
+        const email = req.params.email
+        // Find the merchant using the provided email
+        const merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+
+        res.status(201).json( merchantsWithCarts[0] );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const getAllCartsForOneCategory = async(req,res)=>{
+    const email = req.query.email;
+    const cartCategory = req.query.cartCategory;
+    const carts = await Merchants.find({email:email}).populate("type");
+    // console.log(carts[0].type)
+    var tempCarts = carts[0].type.filter(element=> element.cartCategory== cartCategory)
+    res.send(tempCarts)
+}
+
 
 module.exports = {
     getAllUsers,
@@ -1119,7 +1169,11 @@ module.exports = {
     deleteCart,
     deleteCategoryConnectedToCarts,
     merchantAddStoreToDatabase,
-    getAllStores
+    getAllStores,
+    getAllStoresForOneCategory,
+    storeData,
+    testGetStoreCart,
+    getAllCartsForOneCategory
 
 
 }

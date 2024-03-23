@@ -42,7 +42,6 @@ const merchantSchema = new mongoose.Schema({
         unique: true,
         minLength: 3,
         maxLength:20,
-        lowercase: true,
         trim:true,
     },
     

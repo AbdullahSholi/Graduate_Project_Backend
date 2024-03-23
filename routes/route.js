@@ -112,7 +112,13 @@ router.delete("/matjarcom/api/v1/delete-specific-image-from-cart-image-slider/:e
 router.patch("/matjarcom/api/v1/test-update-specific-cart/:email",authenticateToken, controller.testUpdateSpecificCart)
 router.delete("/matjarcom/api/v1/delete-cart/:email", controller.deleteCart)
 
+
 // Guest ( Display List of Stores  )
 router.get("/matjarcom/api/v1/get-all-stores/",controller.getAllStores)
+// Guest ( Display List of Stores for a Specific Category )
+router.get("/matjarcom/api/v1/get-all-stores-for-one-category/:storeCategory",controller.getAllStoresForOneCategory)
+router.get("/matjarcom/api/v1/store-data/:email",controller.storeData);
+router.get("/matjarcom/api/v1/test-get-store-cart/:email", controller.testGetStoreCart)
+router.get(`/matjarcom/api/v1/get-all-carts-for-one-category`,controller.getAllCartsForOneCategory)
 
 module.exports = router
