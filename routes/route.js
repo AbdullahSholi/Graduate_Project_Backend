@@ -121,4 +121,7 @@ router.get("/matjarcom/api/v1/store-data/:email",controller.storeData);
 router.get("/matjarcom/api/v1/test-get-store-cart/:email", controller.testGetStoreCart)
 router.get(`/matjarcom/api/v1/get-all-carts-for-one-category`,controller.getAllCartsForOneCategory)
 
+// Delete merchant with all store data
+router.delete("/matjarcom/api/v1/delete-store/:email",authenticateToken, controller.deleteStore)
+
 module.exports = router

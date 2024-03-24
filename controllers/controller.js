@@ -540,17 +540,19 @@ const updateSpecificStoreCategories = async (req,res)=>{
         console.log("2222222222")
         console.log(email, index, specificCategoryName)
         console.log("2222222222")
-        const update = { email: email, specificStoreCategories: specificCategoryName, };
-        const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
+        specificCategory.specificStoreCategories[index] = specificCategoryName;
+        await specificCategory.save()
+        // const update = { specificStoreCategories: specificCategoryName, };
+        // const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
         console.log(Merchants)
-        console.log(update)
-        const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
+        // console.log(update)
+        // const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
         
-        console.log(updatedMerchantProfile)
-        if (!updatedMerchantProfile) {
-            // Handle the case where the merchant with the given email was not found
-            return res.status(404).send({ Message: "Merchant not found" });
-        }
+        // console.log(updatedMerchantProfile)
+        // if (!updatedMerchantProfile) {
+        //     // Handle the case where the merchant with the given email was not found
+        //     return res.status(404).send({ Message: "Merchant not found" });
+        // }
         ////////////
         res.status(200).send({Message: "Your profile data updated successfuly!"})
     }catch(error){
@@ -1079,8 +1081,13 @@ const merchantAddStoreToDatabase = async (req,res)=>{
 
 const getAllStores = async (req,res)=>{
     const stores = await Store.find({});
-    
-    res.send(stores[0].stores);
+    console.log(stores)
+    if(stores.length == 0){
+        console.log("No any Store")
+        res.send({Message: "No any Store"})
+    } 
+    else
+        res.send(stores[0].stores);
 }
 
 const getAllStoresForOneCategory = async (req,res)=>{
@@ -1131,6 +1138,25 @@ const getAllCartsForOneCategory = async(req,res)=>{
     res.send(tempCarts)
 }
 
+const deleteStore = async (req,res)=>{
+    const tempStore = await Store.findOne()
+    console.log(tempStore.stores.length)
+    if(tempStore.stores.length != 0){
+        console.log(req.params.email)
+        console.log(tempStore)
+        const store = tempStore.stores.filter(store=>store.email!=req.params.email)
+        tempStore.stores = store;
+        await tempStore.save()
+        console.log(tempStore.stores)
+        await Merchants.findOneAndDelete({email: req.params.email})
+        res.send({Message: "The store deleted successfuly"})
+    } else{
+    console.log("No store to delete")
+    res.send({Message: "No store to delete"})
+    }
+    
+}
+
 
 module.exports = {
     getAllUsers,
@@ -1173,7 +1199,8 @@ module.exports = {
     getAllStoresForOneCategory,
     storeData,
     testGetStoreCart,
-    getAllCartsForOneCategory
+    getAllCartsForOneCategory,
+    deleteStore
 
 
 }
