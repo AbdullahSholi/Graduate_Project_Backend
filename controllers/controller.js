@@ -845,6 +845,7 @@ const testUpdateSpecificCart = async (req,res)=>{
         var cartDescriptionDB = merchant.type[0].cartDescription;
         var cartCategoryDB = merchant.type[0].cartCategory;
         var cartQuantitiesDB = merchant.type[0].cartQuantities;
+        var cartRateDB = merchant.type[0].cartRate;
         
         
         console.log(cartNameDB);
@@ -855,10 +856,11 @@ const testUpdateSpecificCart = async (req,res)=>{
         console.log(cartDescriptionDB);
         console.log(cartCategoryDB);
         console.log(cartQuantitiesDB);
+        console.log(cartRateDB);
 
         // Get Data Coming from Client 
 
-        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index} = req.body;
+        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index, cartRate} = req.body;
        
 
         
@@ -870,7 +872,8 @@ const testUpdateSpecificCart = async (req,res)=>{
             cartPrice: cartPrice != "" ? cartPriceDB = parseFloat(cartPrice) : cartPriceDB = cartPriceDB, 
             cartDescription: cartDescription.trim() != "" ? cartDescriptionDB = cartDescription : cartDescriptionDB = cartDescriptionDB, 
             cartCategory: cartCategory.trim() != "" ? cartCategoryDB = cartCategory : cartCategoryDB = cartCategoryDB, 
-            cartQuantities: cartQuantities != "" ? cartQuantitiesDB = parseInt(cartQuantities) : cartQuantitiesDB = cartQuantitiesDB, 
+            cartQuantities: cartQuantities != "" ? cartQuantitiesDB = parseInt(cartQuantities) : cartQuantitiesDB = cartQuantitiesDB,
+            cartRate: cartRate != "" ? cartRateDB = parseFloat(cartRate) : cartRateDB = cartRateDB,
             cartDiscount: cartDiscount,
             cartLiked: cartLiked, 
             cartFavourite: cartFavourite,
