@@ -1160,6 +1160,18 @@ const deleteStore = async (req,res)=>{
     
 }
 
+const addPaymentMethod = async (req,res)=>{
+    console.log(req.params.email);
+    console.log(req.body);
+    const merchant = await Merchants.find({email:req.params.email});
+    await Merchants.findOneAndUpdate({email:req.params.email},{"publishableKey": req.body.publishableKey, "secretKey": req.body.secretKey}, { new: true })
+    res.send({Message: "Payment informations added successfully!!"});
+}
+
+const getPaymentMethod = async (req, res)=>{
+    const merchants = await Merchants.find({email:req.params.email});
+    res.send(merchants[0]);
+}
 
 module.exports = {
     getAllUsers,
@@ -1203,7 +1215,9 @@ module.exports = {
     storeData,
     testGetStoreCart,
     getAllCartsForOneCategory,
-    deleteStore
+    deleteStore,
+    addPaymentMethod,
+    getPaymentMethod,
 
 
 }

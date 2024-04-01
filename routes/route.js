@@ -92,6 +92,11 @@ router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email"
 router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email",authenticateToken, controller.deleteCategoryConnectedToCarts)
 router.post("/matjarcom/api/v1/merchant-add-store-to-database/:email", controller.merchantAddStoreToDatabase)
 
+// Merchant add payment Information
+router.post("/matjarcom/api/v1/add-payment-informations/:email", controller.addPaymentMethod)
+// Merchant get payment Information 
+router.get("/matjarcom/api/v1/get-payment-informations/:email", controller.getPaymentMethod)
+
 
 // Activator
 
@@ -123,5 +128,6 @@ router.get(`/matjarcom/api/v1/get-all-carts-for-one-category`,controller.getAllC
 
 // Delete merchant with all store data
 router.delete("/matjarcom/api/v1/delete-store/:email",authenticateToken, controller.deleteStore)
+
 
 module.exports = router

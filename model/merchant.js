@@ -94,6 +94,12 @@ const merchantSchema = new mongoose.Schema({
         type:Boolean,
         default:true,
     },
+    publishableKey:{
+        type: String,
+    },
+    secretKey:{
+        type: String,
+    },
     type: [
         {
             type: mongoose.Schema.Types.ObjectId,
