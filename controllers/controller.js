@@ -67,6 +67,7 @@ const deleteUser = async (req,res)=>{
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
+        console.log(req.body);
 
         // Find the user by email
         const user = await Users.findOne({ email });
@@ -132,16 +133,44 @@ const register = async (req, res) => {
 
 const updateUserProfile = async (req, res)=>{
     try{
-        const {username,email, password,phone , country, street} = req.body;
-        console.log(username,email,password)
-        // Hash the password before saving it to the database
+        const {username, password, phone , country, street} = req.body;
+        // console.log(req.body)
+        console.log(req.params.email);
+
+        const user = await Users.find({email: req.params.email})
+        // console.log(user[0]);
+        // var emailDB = user[0].email;
+        var usernameDB = user[0].username;
+        var passwordDB = user[0].password;
+        var phoneDB = user[0].phone;
+        var countryDB = user[0].country;
+        var streetDB = user[0].street;
+
+        // passwordDB, 10);
+
+        // // Hash the password before saving it to the database
         const hashedPassword = await bcrypt.hash(password, 10);
-        ////////////
+        // ////////////
         const filter = { email: req.params.email };
-        const update = { username: username, email: email, password: hashedPassword, phone: phone, country: country, street: street };
+
+        const update = { username: username.trim() != "" ? usernameDB = username : usernameDB = usernameDB, 
+        password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
+        phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
+        country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
+        street: street.trim() != "" ? streetDB = street : streetDB = streetDB
+        };
+        console.log("-----------");
+        console.log(filter);
+
+        // const update = { username: username, email: email, password: hashedPassword, phone: phone, country: country, street: street };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
 
         const updatedUserProfile = await Users.findOneAndUpdate(filter, update, options);
+        if (!updatedUserProfile) {
+            // Handle the case where the merchant with the given email was not found
+            return res.status(404).send({ Message: "User not found" });
+        }
+        // console.log(updatedUserProfile);
         ////////////
         res.status(200).send({Message: "Your profile data updated successfuly!"})
     }catch(error){

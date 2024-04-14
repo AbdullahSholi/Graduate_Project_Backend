@@ -50,7 +50,15 @@ router.get("/matjarcom/api/v1/",(req,res)=>{
     res.render('index');
 })
 
+/////////////////////
+// Apply rate limiting middleware
+const loginLimiter = rateLimit({
+    windowMs: 60 * 1000, // 15 minutes
+    max: 3, // Max 5 failed attempts
+    message: 'Too many login attempts, please try again after 60 seconds',
+  });
  
+
 
 // routes
 router.get("/matjarcom/api/v1/users",authenticateToken ,controller.getAllUsers)
@@ -58,6 +66,8 @@ router.get("/matjarcom/api/v1/users/:userName",controller.getSingleUser)
 router.post("/matjarcom/api/v1/users",controller.addNewUser)
 router.put("/matjarcom/api/v1/users",controller.updateUser)
 router.delete("/matjarcom/api/v1/users/:userId",controller.deleteUser)
+
+router.use('/matjarcom/api/v1/login', loginLimiter);
 
 // for Users( Customers ) Login & Register & update Profile & file upload endpoint
 router.post("/matjarcom/api/v1/login",controller.login)
@@ -67,13 +77,7 @@ router.post("/matjarcom/api/v1/avatar", upload.single("avatar"), controller.uplo
 router.get("/matjarcom/api/v1/profile/:email",authenticateToken,controller.getUserProfile)
 
 
-/////////////////////
-// Apply rate limiting middleware
-const loginLimiter = rateLimit({
-    windowMs: 60 * 1000, // 15 minutes
-    max: 3, // Max 5 failed attempts
-    message: 'Too many login attempts, please try again after 60 seconds',
-  });
+
 router.use('/matjarcom/api/v1/merchant-login', loginLimiter);
 
 // for Merchants login & register & update 
