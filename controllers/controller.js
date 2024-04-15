@@ -1202,6 +1202,20 @@ const getPaymentMethod = async (req, res)=>{
     res.send(merchants[0]);
 }
 
+const customerAddToFavoriteList = async (req, res) =>{
+    const user = await Users.find({ email: req.params.email });
+    user[0].favouriteList.push(req.body.favouriteList)
+    await user[0].save();
+    // const user = await Users.find({ email: req.params.email });
+    console.log(user);
+}
+
+const getCustomerFavoriteList = async (req, res) =>{
+    const user = await Users.find({ email: req.params.email });
+    console.log(user[0].favouriteList);
+    res.send(user[0].favouriteList);
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1247,6 +1261,8 @@ module.exports = {
     deleteStore,
     addPaymentMethod,
     getPaymentMethod,
+    customerAddToFavoriteList,
+    getCustomerFavoriteList
 
 
 }

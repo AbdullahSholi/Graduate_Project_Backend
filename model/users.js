@@ -38,6 +38,10 @@ const userSchema = new mongoose.Schema({
     Avatar:{
         type: String,
         default: "http://res.cloudinary.com/dsuaio9tv/image/upload/v1708109280/blctf7fxgqai2t8p2lck.png",
+    },
+    favouriteList: {
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
     }
 
 });
