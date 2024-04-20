@@ -326,9 +326,9 @@ const merchantUpdate = async (req, res)=>{
         var phoneDB = merchant[0].phone;
         var countryDB = merchant[0].country;
 
-        var hashedPassword0 = await bcrypt.hash(passwordDB, 10);
+        // var hashedPassword0 = await bcrypt.hash(passwordDB, 10);
         
-        console.log(merchantnameDB, hashedPassword0, phoneDB, countryDB);
+        console.log(merchantnameDB,  phoneDB, countryDB);
 
         // Get Data Coming from Client 
 
@@ -343,7 +343,7 @@ const merchantUpdate = async (req, res)=>{
         const filter = { email: emailParams };
         
         const update = { merchantname: merchantname.trim() != "" ? merchantnameDB = merchantname : merchantnameDB = merchantnameDB, 
-        password: password.trim() != "" ? hashedPassword0 = hashedPassword : hashedPassword0= hashedPassword0,
+        password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
         phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
         country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
     };

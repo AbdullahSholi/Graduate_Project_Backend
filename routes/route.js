@@ -53,8 +53,8 @@ router.get("/matjarcom/api/v1/",(req,res)=>{
 /////////////////////
 // Apply rate limiting middleware
 const loginLimiter = rateLimit({
-    windowMs: 60 * 1000, // 15 minutes
-    max: 3, // Max 5 failed attempts
+    windowMs: 60 * 1000, // 60 seconds
+    max: 3, // Max 3 failed attempts
     message: 'Too many login attempts, please try again after 60 seconds',
   });
  
