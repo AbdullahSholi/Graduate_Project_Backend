@@ -859,22 +859,23 @@ const testUpdateSpecificCart = async (req,res)=>{
 
     ///////////////
     try{
+        const index = req.body.index;
         const emailParams = req.params.email
         console.log(emailParams)
         // Get Origin Data from DB
         const merchant = await Merchants.findOne({email: emailParams}).populate("type")
-        console.log(merchant.type[0]);
+        console.log(merchant.type);
         // var emailDB = merchant[0].email;
         
-        var cartNameDB = merchant.type[0].cartName;
-        var cartPriceDB = merchant.type[0].cartPrice;
-        var cartDiscountDB = merchant.type[0].cartDiscount;
-        var cartLikedDB = merchant.type[0].cartLiked;
-        var cartFavouriteDB = merchant.type[0].cartFavourite;
-        var cartDescriptionDB = merchant.type[0].cartDescription;
-        var cartCategoryDB = merchant.type[0].cartCategory;
-        var cartQuantitiesDB = merchant.type[0].cartQuantities;
-        var cartRateDB = merchant.type[0].cartRate;
+        var cartNameDB = merchant.type[index].cartName;
+        var cartPriceDB = merchant.type[index].cartPrice;
+        var cartDiscountDB = merchant.type[index].cartDiscount;
+        var cartLikedDB = merchant.type[index].cartLiked;
+        var cartFavouriteDB = merchant.type[index].cartFavourite;
+        var cartDescriptionDB = merchant.type[index].cartDescription;
+        var cartCategoryDB = merchant.type[index].cartCategory;
+        var cartQuantitiesDB = merchant.type[index].cartQuantities;
+        var cartRateDB = merchant.type[index].cartRate;
         
         
         console.log(cartNameDB);
@@ -889,8 +890,11 @@ const testUpdateSpecificCart = async (req,res)=>{
 
         // Get Data Coming from Client 
 
-        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, index, cartRate} = req.body;
-       
+        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities,  cartRate} = req.body;
+        
+        console.log("++++++++++++++++++++++++++++++");
+        console.log(req.body);
+        console.log("++++++++++++++++++++++++++++++");
 
         
         ////////////
@@ -898,11 +902,11 @@ const testUpdateSpecificCart = async (req,res)=>{
         
         const update = {  
             cartName: cartName.trim() != "" ? cartNameDB = cartName : cartNameDB = cartNameDB, 
-            cartPrice: cartPrice != "" ? cartPriceDB = parseFloat(cartPrice) : cartPriceDB = cartPriceDB, 
+            cartPrice: cartPrice != "" ? cartPriceDB = cartPrice : cartPriceDB = cartPriceDB, 
             cartDescription: cartDescription.trim() != "" ? cartDescriptionDB = cartDescription : cartDescriptionDB = cartDescriptionDB, 
             cartCategory: cartCategory.trim() != "" ? cartCategoryDB = cartCategory : cartCategoryDB = cartCategoryDB, 
-            cartQuantities: cartQuantities != "" ? cartQuantitiesDB = parseInt(cartQuantities) : cartQuantitiesDB = cartQuantitiesDB,
-            cartRate: cartRate != "" ? cartRateDB = parseFloat(cartRate) : cartRateDB = cartRateDB,
+            cartQuantities: cartQuantities != "" ? cartQuantitiesDB = cartQuantities : cartQuantitiesDB = cartQuantitiesDB,
+            cartRate: cartRate != "" ? cartRateDB = cartRate : cartRateDB = cartRateDB,
             cartDiscount: cartDiscount,
             cartLiked: cartLiked, 
             cartFavourite: cartFavourite,
