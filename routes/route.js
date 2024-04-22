@@ -77,6 +77,7 @@ router.post("/matjarcom/api/v1/avatar", upload.single("avatar"), controller.uplo
 router.get("/matjarcom/api/v1/profile/:email",authenticateToken,controller.getUserProfile)
 router.post("/matjarcom/api/v1/customer-add-to-favorite-list/:email",authenticateToken,controller.customerAddToFavoriteList)
 router.get("/matjarcom/api/v1/get-customer-favorite-list/:email",authenticateToken,controller.getCustomerFavoriteList)
+router.delete("/matjarcom/api/v1/delete-product-from-favorite-list/:email",controller.deleteProductFromFavoriteList)
 
 
 

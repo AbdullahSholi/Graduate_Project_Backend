@@ -58,6 +58,10 @@ const cartSchema = new mongoose.Schema({
     merchant: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Merchants"
+    },
+    isFavorite:{
+        type: Boolean,
+        default: false,
     }
 
 });

@@ -1208,16 +1208,41 @@ const getPaymentMethod = async (req, res)=>{
 
 const customerAddToFavoriteList = async (req, res) =>{
     const user = await Users.find({ email: req.params.email });
-    user[0].favouriteList.push(req.body.favouriteList)
-    await user[0].save();
-    // const user = await Users.find({ email: req.params.email });
-    console.log(user);
+
+    const isProductInFavoriteList = user[0].favouriteList.filter(element => element.cartName == req.body.favouriteList.cartName);
+    console.log(isProductInFavoriteList);
+    console.log("||||||||||||||||||");  
+    console.log(req.body.favouriteList);
+    console.log("TTTTTTTTTTTTTTTTTT");
+
+        if(isProductInFavoriteList.length != 0) {
+            // console.log(element);
+            res.send({Message: "This product is exist in your favorite list"});
+        } else {
+            user[0].favouriteList.push(req.body.favouriteList)
+            await user[0].save();
+            console.log(user);
+            res.send({Message: "This product is added to favorite list successfully!"});
+        }
+
+    
+    // console.log(temp);
+    
+    // // const user = await Users.find({ email: req.params.email });
+    
 }
 
 const getCustomerFavoriteList = async (req, res) =>{
     const user = await Users.find({ email: req.params.email });
     console.log(user[0].favouriteList);
     res.send(user[0].favouriteList);
+}
+
+const deleteProductFromFavoriteList = async (req, res)=>{
+    const user = await Users.find({ email: req.params.email });
+    console.log(user[0]);
+    
+    res.send("success");
 }
 
 module.exports = {
@@ -1266,7 +1291,8 @@ module.exports = {
     addPaymentMethod,
     getPaymentMethod,
     customerAddToFavoriteList,
-    getCustomerFavoriteList
+    getCustomerFavoriteList,
+    deleteProductFromFavoriteList
 
 
 }
