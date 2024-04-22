@@ -1210,10 +1210,6 @@ const customerAddToFavoriteList = async (req, res) =>{
     const user = await Users.find({ email: req.params.email });
 
     const isProductInFavoriteList = user[0].favouriteList.filter(element => element.cartName == req.body.favouriteList.cartName);
-    console.log(isProductInFavoriteList);
-    console.log("||||||||||||||||||");  
-    console.log(req.body.favouriteList);
-    console.log("TTTTTTTTTTTTTTTTTT");
 
         if(isProductInFavoriteList.length != 0) {
             // console.log(element);
@@ -1239,11 +1235,15 @@ const getCustomerFavoriteList = async (req, res) =>{
 }
 
 const deleteProductFromFavoriteList = async (req, res)=>{
+    const index = req.body.index;
     const user = await Users.find({ email: req.params.email });
-    console.log(user[0]);
+    user[0].favouriteList.splice(index, 1)
+    await user[0].save();
+    console.log(user[0].favouriteList);
     
     res.send("success");
 }
+
 
 module.exports = {
     getAllUsers,
@@ -1292,7 +1292,7 @@ module.exports = {
     getPaymentMethod,
     customerAddToFavoriteList,
     getCustomerFavoriteList,
-    deleteProductFromFavoriteList
+    deleteProductFromFavoriteList,
 
 
 }

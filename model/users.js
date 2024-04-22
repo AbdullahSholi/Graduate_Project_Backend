@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema({
     favouriteList: {
         type: [mongoose.Schema.Types.Mixed],
         default: []
-    }
+    },
 
 });
 
