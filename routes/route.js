@@ -140,4 +140,9 @@ router.get(`/matjarcom/api/v1/get-all-carts-for-one-category`,controller.getAllC
 router.delete("/matjarcom/api/v1/delete-store/:email",authenticateToken, controller.deleteStore)
 
 
+// store index ( To Solve favorite button in flutter frontend ) 
+router.post("/matjarcom/api/v1/add-store-index/:email", controller.addStoreIndex)
+router.get("/matjarcom/api/v1/get-store-index/", controller.getStoreIndex)
+
+
 module.exports = router

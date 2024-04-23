@@ -17,6 +17,7 @@ const cors = require("cors")
 const Merchants = require("../model/merchant")
 const Carts = require("../model/cart")
 const Store = require("../model/store")
+const IndexModel = require("../model/storeIndex")
 app.use(cors())
 
 
@@ -1283,6 +1284,37 @@ const deleteProductFromFavoriteListFromDifferentStores = async (req, res)=>{
 
 }
 
+const addStoreIndex = async (req, res) =>{
+    
+    try {
+        await IndexModel.deleteMany({});
+        console.log("++++++++++++++++++++++++++++++++");
+        console.log(req.body.index);
+        const filter = { value: req.body.index };
+        const update = { value: req.body.index };
+        const options = { upsert: true, new: true };
+    
+        const result = await IndexModel.findOneAndUpdate(filter, update, options);
+        await result.save();
+        console.log('Index created or updated:', result);
+        res.send(result);
+    } catch (error) {
+        console.error('Error creating or updating index:', error);
+    }
+      
+}
+
+const getStoreIndex = async (req, res) =>{
+    
+    try {
+        const index = await IndexModel.findOne({});
+        res.send(index);
+    } catch (error) {
+        console.error('Error creating or updating index:', error);
+    }
+      
+}
+
 
 module.exports = {
     getAllUsers,
@@ -1332,7 +1364,9 @@ module.exports = {
     customerAddToFavoriteList,
     getCustomerFavoriteList,
     deleteProductFromFavoriteList,
-    deleteProductFromFavoriteListFromDifferentStores
+    deleteProductFromFavoriteListFromDifferentStores,
+    addStoreIndex,
+    getStoreIndex
 
 
 }
