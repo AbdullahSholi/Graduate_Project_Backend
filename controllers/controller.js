@@ -1213,7 +1213,15 @@ const customerAddToFavoriteList = async (req, res) =>{
 
         if(isProductInFavoriteList.length != 0) {
             // console.log(element);
-            res.send({Message: "This product is exist in your favorite list"});
+            const fromDifferentStores = user[0].favouriteList.filter(element => element.merchant == req.body.favouriteList.merchant);
+            if(fromDifferentStores != 0)
+                res.send({Message: "This product is exist in your favorite list"});
+            else {
+                user[0].favouriteList.push(req.body.favouriteList)
+                await user[0].save();
+                console.log(user);
+                res.send({Message: "This product is added to favorite list successfully!"});
+            }
         } else {
             user[0].favouriteList.push(req.body.favouriteList)
             await user[0].save();
@@ -1242,6 +1250,37 @@ const deleteProductFromFavoriteList = async (req, res)=>{
     console.log(user[0].favouriteList);
     
     res.send("success");
+}
+
+
+const deleteProductFromFavoriteListFromDifferentStores = async (req, res)=>{
+    try {
+    const user = await Users.findOne({ email: req.params.email });
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // console.log(user);
+
+        // Filter out the product with the specified cartName and merchant
+        const temp = user.favouriteList.findIndex(element => 
+            element.cartName == req.body.cartName && element.merchant == req.body.merchant
+        );
+
+        user.favouriteList.splice(temp, 1)
+        // console.log(temp);
+        // console.log(user.favouriteList);
+
+        // Save the updated user document
+        await user.save();
+
+        // console.log(user.favouriteList);
+        res.send({ Message: "Product deleted from favorite list successfully!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
+}
+
 }
 
 
@@ -1293,6 +1332,7 @@ module.exports = {
     customerAddToFavoriteList,
     getCustomerFavoriteList,
     deleteProductFromFavoriteList,
+    deleteProductFromFavoriteListFromDifferentStores
 
 
 }
