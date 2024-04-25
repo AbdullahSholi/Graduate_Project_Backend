@@ -1315,6 +1315,79 @@ const getStoreIndex = async (req, res) =>{
       
 }
 
+const customerGetFavoriteProductsDependOnCategory = async (req, res)=>{
+
+    ////////////////////////////////////////////////////////////////////// get all store Products
+
+    try {
+        let commonElement = [] ;
+        let commonElement1 = [] ;
+        let commonElementForFind = [] ;
+        const cartCategory = req.query.cartCategory;
+        
+        const email = req.query.email
+        // Find the merchant using the provided email
+        const merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+
+        const allStoreCarts = merchantsWithCarts[0].type;
+        console.log("!!!!!");
+        // console.log(allStoreCarts);
+        console.log("!!!!!");
+
+        /////////////////////////////////////////////////////////////////////  get Favorite List
+        const user = await Users.find({ email: req.query.customerEmail });
+        console.log("######");
+        // console.log(user[0].favouriteList);
+        console.log("######");
+        // res.send(user[0].favouriteList);
+
+        const favoriteList = user[0].favouriteList;
+        console.log(favoriteList);
+
+        /////////////////////////////////////////////////////////////////////
+
+        for(let i = 0; i < favoriteList.length; i++){
+            for(let j = 0; j < allStoreCarts.length; j++) {
+              if(favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant){
+                commonElement.push(favoriteList[i]);
+              }
+            }
+          }
+          for(let i = 0; i < favoriteList.length; i++){
+            for(let j = 0; j < allStoreCarts.length; j++) {
+              if(favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant){
+                commonElementForFind.push(favoriteList[i].cartName);
+              }
+            }
+          }
+        
+        commonElement1 = allStoreCarts.filter((element) => !commonElementForFind.includes(element.cartName));
+
+        // console.log(commonElement);
+        // console.log(commonElement1);
+
+        var combinedArray = [...commonElement, ...commonElement1];
+        combinedArray = combinedArray.filter(element => element.cartCategory == cartCategory )
+        console.log(combinedArray);
+        console.log(combinedArray.length);
+
+
+        res.status(201).json( combinedArray );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+    
+    
+
+}
+
 
 module.exports = {
     getAllUsers,
@@ -1366,7 +1439,8 @@ module.exports = {
     deleteProductFromFavoriteList,
     deleteProductFromFavoriteListFromDifferentStores,
     addStoreIndex,
-    getStoreIndex
+    getStoreIndex,
+    customerGetFavoriteProductsDependOnCategory
 
 
 }

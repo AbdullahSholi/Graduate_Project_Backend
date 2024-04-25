@@ -79,6 +79,7 @@ router.post("/matjarcom/api/v1/customer-add-to-favorite-list/:email",authenticat
 router.get("/matjarcom/api/v1/get-customer-favorite-list/:email",authenticateToken,controller.getCustomerFavoriteList)
 router.delete("/matjarcom/api/v1/delete-product-from-favorite-list/:email",controller.deleteProductFromFavoriteList)
 router.delete("/matjarcom/api/v1/delete-product-from-favorite-list-from-different-stores/:email",controller.deleteProductFromFavoriteListFromDifferentStores)
+router.get("/matjarcom/api/v1/customer-get-favorite-products-depend-on-category",controller.customerGetFavoriteProductsDependOnCategory)
 
 
 
