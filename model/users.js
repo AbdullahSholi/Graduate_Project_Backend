@@ -43,6 +43,10 @@ const userSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.Mixed],
         default: []
     },
+    cartList:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    }
 
 });
 

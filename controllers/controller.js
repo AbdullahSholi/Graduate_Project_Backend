@@ -1389,6 +1389,42 @@ const customerGetFavoriteProductsDependOnCategory = async (req, res)=>{
 }
 
 
+const customerAddToCartList = async (req, res)=>{
+    const user = await Users.find({ email: req.params.email });
+    // console.log(req.body.cartList);
+    const cartListObj = req.body.cartList;
+    cartListObj.quantities = req.body.quantities;
+    console.log(cartListObj);
+
+
+
+    const isProductInCartList = user[0].cartList.filter(element => element.cartName == cartListObj.cartName);
+
+        if(isProductInCartList.length != 0) {
+            // console.log(element);
+            const fromDifferentStores = user[0].cartList.filter(element => element.merchant == cartListObj.merchant);
+            if(fromDifferentStores != 0)
+                res.send({Message: "This product is exist in your favorite list"});
+            else {
+                user[0].cartList.push(cartListObj)
+                await user[0].save();
+                console.log(user);
+                res.send({Message: "This product is added to favorite list successfully!"});
+            }
+        } else {
+            user[0].cartList.push(cartListObj)
+            await user[0].save();
+            console.log(user);
+            res.send({Message: "This product is added to favorite list successfully!"});
+        }
+
+    
+    // console.log(temp);
+    
+    // // const user = await Users.find({ email: req.params.email });
+}
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1440,7 +1476,8 @@ module.exports = {
     deleteProductFromFavoriteListFromDifferentStores,
     addStoreIndex,
     getStoreIndex,
-    customerGetFavoriteProductsDependOnCategory
+    customerGetFavoriteProductsDependOnCategory,
+    customerAddToCartList
 
 
 }
