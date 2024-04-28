@@ -83,7 +83,8 @@ router.get("/matjarcom/api/v1/customer-get-favorite-products-depend-on-category"
 
 
 router.post("/matjarcom/api/v1/customer-add-to-cart-list/:email",authenticateToken,controller.customerAddToCartList)
-
+router.get("/matjarcom/api/v1/get-customer-cart-list/:email",authenticateToken,controller.getCustomerCartList)
+router.delete("/matjarcom/api/v1/delete-product-from-cart-list-from-different-stores/:email",controller.deleteProductFromCartListFromDifferentStores)
 
 
 router.use('/matjarcom/api/v1/merchant-login', loginLimiter);

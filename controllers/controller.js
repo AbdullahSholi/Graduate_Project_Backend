@@ -1425,6 +1425,43 @@ const customerAddToCartList = async (req, res)=>{
 }
 
 
+const getCustomerCartList = async ( req, res)=>{
+    const user = await Users.find({ email: req.params.email });
+    console.log(user[0].cartList);
+    res.send(user[0].cartList);
+}
+
+
+const deleteProductFromCartListFromDifferentStores = async ( req, res )=>{
+    try {
+        const user = await Users.findOne({ email: req.params.email });
+            if (!user) {
+                return res.status(404).send('User not found');
+            }
+    
+            // console.log(user);
+    
+            // Filter out the product with the specified cartName and merchant
+            const temp = user.cartList.findIndex(element => 
+                element.cartName == req.body.cartName && element.merchant == req.body.merchant
+            );
+    
+            user.cartList.splice(temp, 1)
+            // console.log(temp);
+            // console.log(user.favouriteList);
+    
+            // Save the updated user document
+            await user.save();
+    
+            // console.log(user.favouriteList);
+            res.send({ Message: "Product deleted from cart list successfully!" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+    }
+}
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1477,7 +1514,9 @@ module.exports = {
     addStoreIndex,
     getStoreIndex,
     customerGetFavoriteProductsDependOnCategory,
-    customerAddToCartList
+    customerAddToCartList,
+    getCustomerCartList,
+    deleteProductFromCartListFromDifferentStores
 
 
 }
