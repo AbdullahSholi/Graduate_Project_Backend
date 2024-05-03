@@ -1461,6 +1461,48 @@ const deleteProductFromCartListFromDifferentStores = async ( req, res )=>{
     }
 }
 
+const customerPayForProducts = async (req, res) => {
+    try {
+        let temp = [];
+        // Fetch user data based on email
+        const user = await Users.findOne({ email: req.params.email });
+        console.log(user.cartList);
+        for(let i=0; i<user.cartList.length; i++){
+            const merchantId= user.cartList[i].merchant; // need modify index
+            console.log(merchantId);
+            const merchant = await Merchants.findById(merchantId);
+            console.log(merchant.publishableKey);
+            console.log(merchant.secretKey);
+            console.log(merchant);
+            temp.push({email: merchant.email, publishableKey: merchant.publishableKey, secretKey: merchant.secretKey, merchant: merchant.id })
+        }
+        res.send(temp);
+    } catch (error) {
+        console.error('Error populating merchant data:', error);
+        throw error;
+    }
+}
+
+const deleteAllProductsFromCartList = async ( req, res )=>{
+    try {
+        const user = await Users.findOne({ email: req.params.email });
+            if (!user) {
+                return res.status(404).send('User not found');
+            }
+            user.cartList = [];
+            
+            await user.save();
+            console.log(user);
+    
+            // console.log(user.favouriteList);
+            res.send({ Message: "All Products Deleted successfully!" });
+        } catch (error) {
+            console.error(error);
+            res.status(500).send('Internal Server Error');
+    }
+}
+
+
 
 module.exports = {
     getAllUsers,
@@ -1516,7 +1558,9 @@ module.exports = {
     customerGetFavoriteProductsDependOnCategory,
     customerAddToCartList,
     getCustomerCartList,
-    deleteProductFromCartListFromDifferentStores
+    deleteProductFromCartListFromDifferentStores,
+    customerPayForProducts,
+    deleteAllProductsFromCartList
 
 
 }
