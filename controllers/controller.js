@@ -1503,6 +1503,106 @@ const deleteAllProductsFromCartList = async ( req, res )=>{
 }
 
 
+const incrementMostViewed = async (req, res)=>{
+    try {
+        const email = req.params.email
+        const productIndex = req.body.productIndex;
+        const forMostViewed = req.body.forMostViewed;
+        console.log(forMostViewed);
+        // Find the merchant using the provided email
+        let merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        let merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        console.log(merchantsWithCarts[0].type[productIndex]);
+        merchantsWithCarts[0].type[productIndex].forMostViewed = forMostViewed;
+        await merchantsWithCarts[0].type[productIndex].save();
+        await merchant.save();
+
+        merchant = await Merchants.findOne({ email: email });
+        merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        console.log(merchantsWithCarts[0].type[productIndex]);
+
+        res.status(201).json( merchantsWithCarts[0].type[productIndex] );
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
+
+const getStatisticsAboutProducts = async (req, res)=>{
+        const email = req.params.email
+        const productIndex = req.body.productIndex;
+        console.log(email);
+        console.log(req.body);
+        // Find the merchant using the provided email
+        let merchant = await Merchants.findOne({ email: email });
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        let merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        console.log(merchantsWithCarts[0].type[productIndex]);
+       
+
+        res.status(201).json( {
+            mostViewed: merchantsWithCarts[0].type[productIndex].forMostViewed,
+            forTopRated: merchantsWithCarts[0].type[productIndex].forTopRated,
+            forBestSeller: merchantsWithCarts[0].type[productIndex].forBestSeller,
+        } );
+}
+
+
+const getStatisticsAboutProductsForCategory = async(req,res)=>{
+    const email = req.params.email;
+    const productIndex = req.body.productIndex;
+    console.log(email);
+    console.log(req.body);
+    
+    const cartCategory = req.body.cartCategory;
+    const carts = await Merchants.find({email:email}).populate("type");
+    // console.log(carts[0].type)
+    var tempCarts = carts[0].type.filter(element=> element.cartCategory== cartCategory)
+    res.send(tempCarts)
+}
+
+const incrementMostViewedForCategory = async (req, res)=>{
+    try {
+        const email = req.params.email
+        const productIndex = req.body.productIndex;
+        const forMostViewed = req.body.forMostViewed;
+        const cartCategory = req.body.cartCategory;
+        console.log(req.body);
+        console.log(req.params);
+        // Find the merchant using the provided email
+        let merchant = await Merchants.findOne({ email: email }).populate('type');
+        // console.log(merchant);
+
+        if (!merchant) {
+            return res.status(404).json({ error: "Merchant not found" });
+        }
+
+        var tempCarts = merchant.type.filter(element=> element.cartCategory== cartCategory)
+        
+        console.log(tempCarts[productIndex]);
+        tempCarts[productIndex].forMostViewed = forMostViewed;
+        await tempCarts[productIndex].save();
+        await merchant.save();
+
+
+        res.status(201).json( {
+            merchant
+        } );
+       
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+}
 
 module.exports = {
     getAllUsers,
@@ -1560,7 +1660,11 @@ module.exports = {
     getCustomerCartList,
     deleteProductFromCartListFromDifferentStores,
     customerPayForProducts,
-    deleteAllProductsFromCartList
+    deleteAllProductsFromCartList,
+    incrementMostViewed,
+    getStatisticsAboutProducts,
+    getStatisticsAboutProductsForCategory,
+    incrementMostViewedForCategory
 
 
 }

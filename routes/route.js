@@ -87,7 +87,10 @@ router.get("/matjarcom/api/v1/get-customer-cart-list/:email",authenticateToken,c
 router.delete("/matjarcom/api/v1/delete-product-from-cart-list-from-different-stores/:email",controller.deleteProductFromCartListFromDifferentStores)
 router.delete("/matjarcom/api/v1/delete-all-products-from-cart-list/:email",controller.deleteAllProductsFromCartList)
 router.get("/matjarcom/api/v1/customer-pay-for-products/:email", controller.customerPayForProducts)
-
+router.post("/matjarcom/api/v1/increment-most-viewed/:email",  controller.incrementMostViewed);
+router.post("/matjarcom/api/v1/get-statistics-about-products/:email",  controller.getStatisticsAboutProducts);
+router.post("/matjarcom/api/v1/increment-most-viewed-for-category/:email",  controller.incrementMostViewedForCategory);
+router.post("/matjarcom/api/v1/get-statistics-about-products-for-category/:email",  controller.getStatisticsAboutProductsForCategory);
 
 router.use('/matjarcom/api/v1/merchant-login', loginLimiter);
 

@@ -46,7 +46,12 @@ const userSchema = new mongoose.Schema({
     cartList:{
         type: [mongoose.Schema.Types.Mixed],
         default: []
-    }
+    },
+    userChat:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
+
 
 });
 

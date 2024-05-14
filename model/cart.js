@@ -62,7 +62,21 @@ const cartSchema = new mongoose.Schema({
     isFavorite:{
         type: Boolean,
         default: false,
-    }
+    },
+    forMostViewed:{
+        default: 0,
+        type: Number
+    },
+    forTopRated:{
+        default: 0,
+        type: Number
+    },
+    forBestSeller:{
+        default: 0,
+        type:Number
+    }, 
+    
+
 
 });
 
