@@ -159,4 +159,15 @@ router.get("/matjarcom/api/v1/get-list-of-questions/:email", controller.getListO
 router.post("/matjarcom/api/v1/add-your-answer/:email", controller.addYourAnswer);
 router.get("/matjarcom/api/v1/get-list-of-answered-questions/:email", controller.getListOfAnsweredQuestions);
 
+
+// Rate Product
+router.post("/matjarcom/api/v1/add-your-rate/:email", controller.addYourRate);
+router.post("/matjarcom/api/v1/get-average-product-rate/:email", controller.getAverageProductRate);
+router.post("/matjarcom/api/v1/get-product-rate-list/:email", controller.getProductRateList);
+router.post("/matjarcom/api/v1/get-number-of-rates-via-number-of-stars/:email", controller.getNumberOfRatesViaNumberOfStars);
+
+
+
+// Other
+router.post("/matjarcom/api/v1/get-product-name-via-index/:email", controller.getProductNameViaIndex);
 module.exports = router

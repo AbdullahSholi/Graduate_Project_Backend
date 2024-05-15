@@ -1668,6 +1668,107 @@ const getListOfAnsweredQuestions = async (req, res) => {
 
 }
 
+const addYourRate = async (req, res)=>{
+    const index = req.body.index;
+    const productRateValue = req.body.productRateValue;
+    const date = req.body.date;
+    const customerName = req.body.customerName;
+    const customerEmail = req.body.customerEmail;
+    const imageUrl = req.body.imageUr;
+    const comment = req.body.comment;
+    
+
+    const productRate = req.body;
+
+    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    console.log(merchant.type[index].productRates);
+    
+    const isExist = merchant.type[index].productRates.some(element => element.customerEmail == customerEmail);
+    if(!isExist && merchant.type[index].productRates!=[]){
+        merchant.type[index].productRates.push(req.body);
+        await merchant.type[index].save();
+        await merchant.save();
+        
+        // console.log(productRate);
+        res.send(productRate);
+        return;
+    }
+  
+    res.send("Rated product Previously!!")
+
+}
+
+const getAverageProductRate = async (req, res)=>{
+
+    const index = req.body.index;
+    
+    let average = 0;
+    let counter = 0;
+    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    console.log(merchant);
+
+    if(merchant.type[index].productRates.length==0){
+        average = 3;
+        res.send({Rate: average, numberOfRates: merchant.type[index].productRates.length})
+        return;
+    }
+    
+    for(let i=0; i<merchant.type[index].productRates.length; i++){
+        counter+=merchant.type[index].productRates[i].productRateValue;
+        // console.log(merchant.type[index].productRates[i].productRateValue)
+    }
+
+    average = counter/merchant.type[index].productRates.length;
+    console.log(average);
+    res.send({Rate: average, numberOfRates: merchant.type[index].productRates.length}) 
+}
+
+const getProductNameViaIndex = async (req, res) =>{
+    const productName = req.body.productName;
+    
+    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    console.log(merchant);
+    
+    for(let i=0; i<merchant.type.length; i++){
+        if(merchant.type[i].cartName==productName){
+            console.log(i);
+            res.send({index: i});
+            return; 
+        }
+        // console.log(merchant.type[index].productRates[i].productRateValue)
+    }
+    res.send({Message: "Product not found!!"}); 
+
+}
+
+const getProductRateList = async (req, res) => {
+    
+    const index = req.body.index;
+    const customerEmail = req.body.customerEmail;
+    const productRate = req.body;
+    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    console.log(merchant.type[index].productRates);
+    if( merchant.type[index].productRates == [] ){
+        res.send({ Message: "Empty List"}); 
+        return;
+    }
+
+    res.send({productRate: merchant.type[index].productRates})
+    
+}
+
+const getNumberOfRatesViaNumberOfStars = async (req, res)=>{
+    const index = req.body.index;
+    const customerEmail = req.body.customerEmail;
+    const numberOfStars = Math.ceil(req.body.numberOfStars);
+    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    console.log(merchant.type[index].productRates);
+
+    let temp = merchant.type[index].productRates.filter((element)=> Math.ceil(element.productRateValue) == numberOfStars )
+    console.log(temp.length);
+    res.send({result: temp.length});
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1732,7 +1833,12 @@ module.exports = {
     addYourQuestion,
     getListOfQuestion,
     addYourAnswer,
-    getListOfAnsweredQuestions
+    getListOfAnsweredQuestions,
+    addYourRate,
+    getAverageProductRate,
+    getProductNameViaIndex,
+    getProductRateList,
+    getNumberOfRatesViaNumberOfStars
 
 
 }
