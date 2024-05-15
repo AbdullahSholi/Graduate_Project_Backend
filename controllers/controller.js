@@ -1604,6 +1604,70 @@ const incrementMostViewedForCategory = async (req, res)=>{
     }
 }
 
+const addYourQuestion = async (req, res)=>{
+    const email = req.params.email
+        
+    console.log(req.params);
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+    merchant.supportFAQ.push(req.body);
+    await merchant.save();
+    console.log(merchant.supportFAQ);
+    res.send(merchant.supportFAQ);
+}
+
+const getListOfQuestion = async (req, res) =>{
+    const email = req.params.email
+        
+    console.log(req.params);
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+    console.log(merchant.supportFAQ);
+    res.send(merchant.supportFAQ);
+}
+
+const addYourAnswer = async (req, res)=>{
+    const email = req.params.email;
+    const index = req.body.index;
+    const answer = req.body.answer;
+    const isAnswered = req.body.isAnswered;
+        
+    console.log(req.params);
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    // const question = merchant.supportFAQ[index];
+    let temp = { 
+        question: merchant.supportFAQ[index].question, 
+        isAnswered: isAnswered, 
+        answer: answer, 
+        
+    }
+    merchant.supportFAQ[index] = temp;
+    await merchant.save();
+    console.log(merchant.supportFAQ);
+    res.send(merchant.supportFAQ);
+}
+
+const getListOfAnsweredQuestions = async (req, res) => {
+    const email = req.params.email;
+    let temp =[];
+        
+    console.log(req.params);
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    for(let i=0; i<merchant.supportFAQ.length; i++){
+        if (merchant.supportFAQ[i].hasOwnProperty("answer")) {
+            temp.push(merchant.supportFAQ[i]);
+        } 
+    }
+
+    console.log(temp);
+    res.send(temp);
+
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1664,7 +1728,11 @@ module.exports = {
     incrementMostViewed,
     getStatisticsAboutProducts,
     getStatisticsAboutProductsForCategory,
-    incrementMostViewedForCategory
+    incrementMostViewedForCategory,
+    addYourQuestion,
+    getListOfQuestion,
+    addYourAnswer,
+    getListOfAnsweredQuestions
 
 
 }

@@ -153,4 +153,10 @@ router.post("/matjarcom/api/v1/add-store-index/:email", controller.addStoreIndex
 router.get("/matjarcom/api/v1/get-store-index/", controller.getStoreIndex)
 
 
+// FAQ 
+router.post("/matjarcom/api/v1/add-your-question/:email", controller.addYourQuestion);
+router.get("/matjarcom/api/v1/get-list-of-questions/:email", controller.getListOfQuestion);
+router.post("/matjarcom/api/v1/add-your-answer/:email", controller.addYourAnswer);
+router.get("/matjarcom/api/v1/get-list-of-answered-questions/:email", controller.getListOfAnsweredQuestions);
+
 module.exports = router
