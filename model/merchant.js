@@ -109,6 +109,10 @@ const merchantSchema = new mongoose.Schema({
     supportFAQ:{
         type: [mongoose.Schema.Types.Mixed],
         default: []
+    },
+    userIdToNotify:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
     }
     
 

@@ -18,6 +18,7 @@ const Merchants = require("../model/merchant")
 const Carts = require("../model/cart")
 const Store = require("../model/store")
 const IndexModel = require("../model/storeIndex")
+const { sendNotification, sendNotificationToDevice, sendCustomNotificationToDevice } = require("../config/send-notificat")
 app.use(cors())
 
 
@@ -1769,6 +1770,85 @@ const getNumberOfRatesViaNumberOfStars = async (req, res)=>{
     res.send({result: temp.length});
 }
 
+
+const addUserDeviceIdIntoList = async (req, res)=>{
+    const email = req.params.email;
+    const deviceId = req.body.deviceId;
+    
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    let temp = merchant.userIdToNotify.filter((element)=> element == deviceId);
+    console.log(merchant.userIdToNotify.length);
+    console.log(temp.length);
+    
+    if(temp.length != 0 && merchant.userIdToNotify.length != 0){
+        res.send({Message: "This device id already exist in DB!!"});
+        return;
+    }
+    
+    merchant.userIdToNotify.push(deviceId);
+    await merchant.save();
+    console.log(merchant.userIdToNotify);
+    res.send(merchant.userIdToNotify);
+}
+
+const getDeviceIdList = async ( req, res) =>{
+    const email = req.params.email;
+    
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    console.log(merchant.userIdToNotify);
+    res.send(merchant.userIdToNotify);
+}
+
+const deleteUserDeviceIdFromList = async (req, res) =>{
+    const email = req.params.email;
+    const deviceId = req.body.deviceId;
+    
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    let temp = merchant.userIdToNotify.filter((element)=> element != deviceId);
+    console.log(temp);
+    if(temp.length != 0 || merchant.userIdToNotify.length == 0){
+        res.send({Message: "Device not exist!!"});
+        return;
+    }
+    merchant.userIdToNotify = temp;
+    await merchant.save();
+    console.log(merchant.userIdToNotify);
+    // res.send(merchant.userIdToNotify);
+    res.send({Message: "Deactivate notifications"});
+    
+}
+
+const findUserDeviceIdFromList = async (req, res) =>{
+    const email = req.params.email;
+    const deviceId = req.body.deviceId;
+    
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
+
+    
+    let temp = merchant.userIdToNotify.filter((element)=> element == deviceId);
+    
+    if(temp.length != 0){
+        console.log(true);
+        res.send(true);
+        return;
+    }
+
+    console.log(false);
+    res.send(false);
+
+    
+    
+}
+
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -1838,7 +1918,14 @@ module.exports = {
     getAverageProductRate,
     getProductNameViaIndex,
     getProductRateList,
-    getNumberOfRatesViaNumberOfStars
+    getNumberOfRatesViaNumberOfStars,
+    sendNotification,
+    sendNotificationToDevice,
+    addUserDeviceIdIntoList,
+    getDeviceIdList,
+    sendCustomNotificationToDevice,
+    deleteUserDeviceIdFromList,
+    findUserDeviceIdFromList
 
 
 }

@@ -7,6 +7,7 @@ const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
 const rateLimit = require('express-rate-limit');
 
+
 const { error } = require("console")
 const upload = require("../controllers/controller").upload
 console.log(upload)
@@ -167,6 +168,17 @@ router.post("/matjarcom/api/v1/get-product-rate-list/:email", controller.getProd
 router.post("/matjarcom/api/v1/get-number-of-rates-via-number-of-stars/:email", controller.getNumberOfRatesViaNumberOfStars);
 
 
+// Send Notifications
+router.get("/matjarcom/api/v1/send-notification", controller.sendNotification);
+router.post("/matjarcom/api/v1/send-notification-to-device", controller.sendNotificationToDevice);
+router.post("/matjarcom/api/v1/send-custom-notification-to-device", controller.sendCustomNotificationToDevice);
+router.post("/matjarcom/api/v1/add-user-device-id-into-list/:email", controller.addUserDeviceIdIntoList);
+router.delete("/matjarcom/api/v1/delete-user-device-id-from-list/:email", controller.deleteUserDeviceIdFromList);
+router.get("/matjarcom/api/v1/get-device-id-list/:email", controller.getDeviceIdList);
+router.post("/matjarcom/api/v1/find-user-device-id-from-list/:email", controller.findUserDeviceIdFromList);
+
+////////////////////////////////////////////////
+///////////////////////////////////////////////
 
 // Other
 router.post("/matjarcom/api/v1/get-product-name-via-index/:email", controller.getProductNameViaIndex);
