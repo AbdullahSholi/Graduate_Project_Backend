@@ -1,9 +1,10 @@
 // import Packages
 const express = require("express")
 const session = require("express-session")
-const app = express()
+const app = express();
+const nodemailer = require('nodemailer');
 
-const users=require("../model/users")
+const users = require("../model/users")
 const mongoose = require("mongoose")
 const Users = require("../model/users")
 const bcrypt = require("bcrypt")
@@ -27,7 +28,7 @@ app.use(cors())
 
 /////////////////////////////////////
 
-const getAllUsers = async (req,res)=>{
+const getAllUsers = async (req, res) => {
     const query = req.query;
     const limit = query.limit || 4;
     const page = query.page || 1;
@@ -36,32 +37,32 @@ const getAllUsers = async (req,res)=>{
     res.send(await Users.find().limit(limit).skip(skip))
 }
 
-const getSingleUser = async (req,res)=>{
+const getSingleUser = async (req, res) => {
     var userName = req.params.userName
     console.log(userName)
-    const user = await Users.find({name:userName})
+    const user = await Users.find({ name: userName })
     res.send(user)
 }
 
-const addNewUser = async (req,res)=>{
+const addNewUser = async (req, res) => {
     console.log(req.body)
     const user = new Users(req.body)
     user.save()
-    res.send({Message: "Add New User Successfuly!!", Result:await Users.find()})
+    res.send({ Message: "Add New User Successfuly!!", Result: await Users.find() })
 }
 
-const updateUser = async (req,res)=>{
-    const {id, name} = req.body;
-    console.log(id,name)
-    const updatedUser = await users.findByIdAndUpdate(id,{name:name},{new:true})
+const updateUser = async (req, res) => {
+    const { id, name } = req.body;
+    console.log(id, name)
+    const updatedUser = await users.findByIdAndUpdate(id, { name: name }, { new: true })
     res.send(updatedUser)
 }
 
-const deleteUser = async (req,res)=>{
+const deleteUser = async (req, res) => {
     const userId = req.params.userId;
     console.log(userId)
     const deletedUser = await users.findByIdAndDelete(userId)
-    res.send({Result: await Users.find({})})
+    res.send({ Result: await Users.find({}) })
 }
 
 
@@ -83,13 +84,13 @@ const login = async (req, res) => {
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        
+
 
         // Generate JWT token
         const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
 
         // Send the token in the response
-        res.json({ email:email,token });
+        res.json({ email: email, token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -98,7 +99,7 @@ const login = async (req, res) => {
 
 const register = async (req, res) => {
     try {
-        const { username,email, password, phone, country, street} = req.body;
+        const { username, email, password, phone, country, street } = req.body;
         console.log(req.body)
 
         // Check if the user already exists
@@ -115,8 +116,8 @@ const register = async (req, res) => {
             username: username,
             email: email,
             password: hashedPassword,
-            phone:phone,
-            country:country,
+            phone: phone,
+            country: country,
             street: street,
         });
         // Save the user to the database
@@ -126,20 +127,20 @@ const register = async (req, res) => {
         const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
         console.log(token)
         // Send the token in the response
-        res.status(201).send( {email:email,Token: token});
+        res.status(201).send({ email: email, Token: token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
 }
 
-const updateUserProfile = async (req, res)=>{
-    try{
-        const {username, password, phone , country, street} = req.body;
+const updateUserProfile = async (req, res) => {
+    try {
+        const { username, password, phone, country, street } = req.body;
         // console.log(req.body)
         console.log(req.params.email);
 
-        const user = await Users.find({email: req.params.email})
+        const user = await Users.find({ email: req.params.email })
         // console.log(user[0]);
         // var emailDB = user[0].email;
         var usernameDB = user[0].username;
@@ -155,11 +156,12 @@ const updateUserProfile = async (req, res)=>{
         // ////////////
         const filter = { email: req.params.email };
 
-        const update = { username: username.trim() != "" ? usernameDB = username : usernameDB = usernameDB, 
-        password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
-        phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
-        country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
-        street: street.trim() != "" ? streetDB = street : streetDB = streetDB
+        const update = {
+            username: username.trim() != "" ? usernameDB = username : usernameDB = usernameDB,
+            password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
+            phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
+            country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
+            street: street.trim() != "" ? streetDB = street : streetDB = streetDB
         };
         console.log("-----------");
         console.log(filter);
@@ -174,19 +176,19 @@ const updateUserProfile = async (req, res)=>{
         }
         // console.log(updatedUserProfile);
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
-        res.status(500).send({Error:error})
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
+        res.status(500).send({ Error: error })
     }
 }
 
 const uploadfile = async (req, res) => {
     var email = req.body.email;
-    const user = await Users.findOne({email:email});
-    
-     cloudinary.uploader.upload(req.file.path, function(err, result) {
+    const user = await Users.findOne({ email: email });
+
+    cloudinary.uploader.upload(req.file.path, function (err, result) {
         // console.log(err)
-        if(err){
+        if (err) {
             console.log(err);
             return res.status(500).send({
                 success: false,
@@ -200,48 +202,48 @@ const uploadfile = async (req, res) => {
         console.log(user);
         // const temp = Users.findOne({email:email});
         // console.log(temp);
-        
-        
+
+
         res.status(200).send({
             success: true,
             message: "Uploaded",
             data: result.url,
-            email:email,
+            email: email,
         })
     })
     // console.log(req.file.path)
     // res.send({ status: "Success" });
-  }
+}
 
 const storage = multer.diskStorage({
-    filename: function( req, file, cb){
-        cb(null,file.originalname)
+    filename: function (req, file, cb) {
+        cb(null, file.originalname)
     }
 })
 
 // to make it access only images , we will use fileFilter
 
-const fileFilter = (req,file,cb)=>{
+const fileFilter = (req, file, cb) => {
     const imageType = file.mimetype.split("/")[0]
-    if(imageType=="image"){
-      cb(null,true)
-      // null --> error 
-      // true --> access it to upload
-    }else{
-      return cb(error,false)
+    if (imageType == "image") {
+        cb(null, true)
+        // null --> error 
+        // true --> access it to upload
+    } else {
+        return cb(error, false)
     }
 }
 
 const upload = multer({ storage: storage });
 
-const getUserProfile = async (req,res)=>{
+const getUserProfile = async (req, res) => {
     var email = req.params.email
     console.log(email)
-    const user = await Users.findOne({email: email})
+    const user = await Users.findOne({ email: email })
     res.send(user)
 }
 
-const merchantLogin = async (req,res)=>{
+const merchantLogin = async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -257,13 +259,13 @@ const merchantLogin = async (req,res)=>{
             return res.status(401).json({ message: 'Invalid email or password' });
         }
 
-        
+
         console.log(process.env.JWT_SECRET);
         // Generate JWT token
         const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
 
         // Send the token in the response
-        res.json({ email:email,token });
+        res.json({ email: email, token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -272,7 +274,7 @@ const merchantLogin = async (req,res)=>{
 
 const merchantRegister = async (req, res) => {
     try {//                                                                                                                                                                                     
-        const { merchantname,email, password, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, specificStoreCategories  } = req.body;
+        const { merchantname, email, password, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, specificStoreCategories } = req.body;
         console.log(req.body)
 
         // Check if the user already exists
@@ -289,8 +291,8 @@ const merchantRegister = async (req, res) => {
             merchantname: merchantname,
             email: email,
             password: hashedPassword,
-            phone:phone,
-            country:country,
+            phone: phone,
+            country: country,
             Avatar: Avatar,
             storeName: storeName,
             storeAvatar: storeAvatar,
@@ -308,19 +310,19 @@ const merchantRegister = async (req, res) => {
         const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
         console.log(token)
         // Send the token in the response
-        res.status(201).send( {email:email,Token: token});
+        res.status(201).send({ email: email, Token: token });
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: error.message });
     }
 }
 
-const merchantUpdate = async (req, res)=>{
-    try{
+const merchantUpdate = async (req, res) => {
+    try {
         const emailParams = req.params.email
         console.log(emailParams)
         // Get Origin Data from DB
-        const merchant = await Merchants.find({email: emailParams})
+        const merchant = await Merchants.find({ email: emailParams })
         console.log(merchant[0]);
         // var emailDB = merchant[0].email;
         var merchantnameDB = merchant[0].merchantname;
@@ -329,55 +331,56 @@ const merchantUpdate = async (req, res)=>{
         var countryDB = merchant[0].country;
 
         // var hashedPassword0 = await bcrypt.hash(passwordDB, 10);
-        
-        console.log(merchantnameDB,  phoneDB, countryDB);
+
+        console.log(merchantnameDB, phoneDB, countryDB);
 
         // Get Data Coming from Client 
 
-        var {merchantname, password, phone, country} = req.body;
+        var { merchantname, password, phone, country } = req.body;
         // console.log(merchantname, password,phone, country);
         // Hash the password before saving it to the database
         const hashedPassword = await bcrypt.hash(password, 10);
 
         console.log(merchantname, hashedPassword, phone, country);
-        
+
         ////////////
         const filter = { email: emailParams };
-        
-        const update = { merchantname: merchantname.trim() != "" ? merchantnameDB = merchantname : merchantnameDB = merchantnameDB, 
-        password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
-        phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
-        country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
-    };
+
+        const update = {
+            merchantname: merchantname.trim() != "" ? merchantnameDB = merchantname : merchantnameDB = merchantnameDB,
+            password: password.trim() != "" ? passwordDB = hashedPassword : passwordDB = passwordDB,
+            phone: phone.trim() != "" ? phoneDB = phone : phoneDB = phoneDB,
+            country: country.trim() != "" ? countryDB = country : countryDB = countryDB,
+        };
 
         console.log(update)
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
-        
-        
+
+
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
-        
+
+
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         //////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
-const merchantProfile = async (req,res)=>{
-    try{
+const merchantProfile = async (req, res) => {
+    try {
         console.log(req.params.email)
-        const merchant = await Merchants.findOne({email:req.params.email});
+        const merchant = await Merchants.findOne({ email: req.params.email });
         console.log(merchant);
         res.status(200).send(merchant);
     }
-    catch(err){
-        res.status(500).send({Message: err})
+    catch (err) {
+        res.status(500).send({ Message: err })
     }
 
 }
@@ -385,11 +388,11 @@ const merchantProfile = async (req,res)=>{
 const uploadStoreAvatar = async (req, res) => {
     console.log("test")
     var email = req.body.email;
-    const user = await Merchants.findOne({email:email});
-    
-     cloudinary.uploader.upload(req.file.path, function(err, result) {
+    const user = await Merchants.findOne({ email: email });
+
+    cloudinary.uploader.upload(req.file.path, function (err, result) {
         // console.log(err)
-        if(err){
+        if (err) {
             console.log(err);
             return res.status(500).send({
                 success: false,
@@ -403,79 +406,80 @@ const uploadStoreAvatar = async (req, res) => {
         console.log(user);
         // const temp = Users.findOne({email:email});
         // console.log(temp);
-        
-        
+
+
         res.status(200).send({
             success: true,
             message: "Uploaded",
             data: result.url,
-            email:email,
+            email: email,
         })
     })
     // console.log(req.file.path)
     // res.send({ status: "Success" });
-  }
+}
 
-const updateStoreInformation = async (req,res)=>{
-    try{
+const updateStoreInformation = async (req, res) => {
+    try {
 
         const emailParams = req.params.email
         console.log(emailParams)
 
         // Get Origin Data from DB
-        const merchant = await Merchants.find({email: emailParams})
+        const merchant = await Merchants.find({ email: emailParams })
         console.log(merchant[0]);
         // var emailDB = merchant[0].email;
         var storeNameDB = merchant[0].storeName;
         var storeCategoryDB = merchant[0].storeCategory;
         var storeDescriptionDB = merchant[0].storeDescription;
-        
+
         console.log(storeNameDB, storeCategoryDB, storeDescriptionDB);
 
         /////////////////////////////
 
         console.log(req.body)
-        const {storeName,storeCategory, storeDescription } = req.body;
-        
+        const { storeName, storeCategory, storeDescription } = req.body;
+
         const filter = { email: req.params.email };
 
 
-        const update = { storeName: storeName.trim() != "" ? storeNameDB = storeName : storeNameDB = storeNameDB, 
-        storeCategory: storeCategory.trim() != "" ? storeCategoryDB = storeCategory : storeCategoryDB = storeCategoryDB,
-        storeDescription: storeDescription.trim() != "" ? storeDescriptionDB = storeDescription : storeDescriptionDB = storeDescriptionDB,
+        const update = {
+            storeName: storeName.trim() != "" ? storeNameDB = storeName : storeNameDB = storeNameDB,
+            storeCategory: storeCategory.trim() != "" ? storeCategoryDB = storeCategory : storeCategoryDB = storeCategoryDB,
+            storeDescription: storeDescription.trim() != "" ? storeDescriptionDB = storeDescription : storeDescriptionDB = storeDescriptionDB,
         };
 
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
 
         const updatedUserProfile = await Merchants.findOneAndUpdate(filter, update, options);
         ////////////
-        res.status(200).send({Message: "Your store data updated successfuly!",storeName: storeName, storeCategory: storeCategory, storeDescription: storeDescription})
-    }catch(error){
-        res.status(500).send({Error:error})
+        res.status(200).send({ Message: "Your store data updated successfuly!", storeName: storeName, storeCategory: storeCategory, storeDescription: storeDescription })
+    } catch (error) {
+        res.status(500).send({ Error: error })
     }
 
     ///////////////////////
-    
+
 
     ////////////////
 }
 
 
-const connectSocialMediaAccounts = async (req, res)=>{
+const connectSocialMediaAccounts = async (req, res) => {
     console.log(1)
-    try{
+    try {
         console.log(req.body)
         const storeSocialMediaAccounts = req.body.storeSocialMediaAccounts;
-        
+
         const filter = { email: req.params.email };
         const update = { storeSocialMediaAccounts: storeSocialMediaAccounts };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
 
         const updatedUserProfile = await Merchants.findOneAndUpdate(filter, update, options);
         ////////////
-        res.status(200).send({Message: "Your store data updated successfuly!",})
-    }catch(error){
-        res.status(500).send({Error:error})
+        res.status(200).send({ Message: "Your store data updated successfuly!", })
+    } catch (error) {
+        res.status(500).send({ Error: error })
     }
 }
 
@@ -483,11 +487,11 @@ const connectSocialMediaAccounts = async (req, res)=>{
 const storeSliderImages = async (req, res) => {
     console.log("test")
     var email = req.body.email;
-    const user = await Merchants.findOne({email:email});
-    
-     cloudinary.uploader.upload(req.file.path, function(err, result) {
+    const user = await Merchants.findOne({ email: email });
+
+    cloudinary.uploader.upload(req.file.path, function (err, result) {
         // console.log(err)
-        if(err){
+        if (err) {
             console.log(err);
             return res.status(500).send({
                 success: false,
@@ -502,70 +506,70 @@ const storeSliderImages = async (req, res) => {
         console.log(user);
         // const temp = Users.findOne({email:email});
         // console.log(temp);
-        
-        
+
+
         res.status(200).send({
             success: true,
             message: "Uploaded",
             data: user,
-            email:email,
+            email: email,
         })
     })
     // console.log(req.file.path)
     // res.send({ status: "Success" });
-  }
+}
 
-  const specificStoreCategories = async (req, res) => {
-    try{
-        const {email,specificStoreCategories} = req.body;
-        console.log(specificStoreCategories,"wwwwwwwwwwwwwwwwwwwwwww")
+const specificStoreCategories = async (req, res) => {
+    try {
+        const { email, specificStoreCategories } = req.body;
+        console.log(specificStoreCategories, "wwwwwwwwwwwwwwwwwwwwwww")
         console.log(req.body)
-        console.log(specificStoreCategories,"wwwwwwwwwwwwwwwwwwwwwww")
+        console.log(specificStoreCategories, "wwwwwwwwwwwwwwwwwwwwwww")
         const filter = { email: req.params.email };
         // console.log(filter)
-        const update = { $push: {specificStoreCategories: specificStoreCategories}};
+        const update = { $push: { specificStoreCategories: specificStoreCategories } };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
         // console.log(update)
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
+
         console.log(updatedMerchantProfile)
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
 // deleteSpecificStoreCategories
-const deleteSpecificStoreCategories = async (req,res)=>{
+const deleteSpecificStoreCategories = async (req, res) => {
     console.log(1)
     const email = req.params.email;
     const index = req.body.index;
     // console.log(email)
-    const specificCategory = await Merchants.findOne({email:email})
+    const specificCategory = await Merchants.findOne({ email: email })
     console.log(specificCategory.specificStoreCategories[index])
     console.log(req.body)
     await Merchants.updateOne(
-        {email:email},
-        { $pull: { specificStoreCategories: {$in: [specificCategory.specificStoreCategories[index]]} } },
+        { email: email },
+        { $pull: { specificStoreCategories: { $in: [specificCategory.specificStoreCategories[index]] } } },
         { new: true },
-        
-      );
-      
-    console.log(await Merchants.find({email:email}))
-    res.send({Result: "Category Deleted Successfully!!"})
+
+    );
+
+    console.log(await Merchants.find({ email: email }))
+    res.send({ Result: "Category Deleted Successfully!!" })
 }
 
 
-const updateSpecificStoreCategories = async (req,res)=>{
-    try{
-        const {email,index,specificCategoryName} = req.body;
-        const specificCategory = await Merchants.findOne({email:email});
+const updateSpecificStoreCategories = async (req, res) => {
+    try {
+        const { email, index, specificCategoryName } = req.body;
+        const specificCategory = await Merchants.findOne({ email: email });
         const newSpecificCategoryName = specificCategory.specificStoreCategories[index];
         const filter = { email: req.params.email, specificStoreCategories: newSpecificCategoryName };
         console.log("2222222222")
@@ -578,46 +582,46 @@ const updateSpecificStoreCategories = async (req,res)=>{
         console.log(Merchants)
         // console.log(update)
         // const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
+
         // console.log(updatedMerchantProfile)
         // if (!updatedMerchantProfile) {
         //     // Handle the case where the merchant with the given email was not found
         //     return res.status(404).send({ Message: "Merchant not found" });
         // }
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
-const deleteSpecificImageFromStoreSlider = async (req,res) =>{
+const deleteSpecificImageFromStoreSlider = async (req, res) => {
     console.log(1)
     const email = req.params.email;
     const url = req.body.url;
     // console.log(email)
-    const specificStore = await Merchants.findOne({email:email})
+    const specificStore = await Merchants.findOne({ email: email })
     // console.log(specificStore);
     console.log(specificStore.storeSliderImages.indexOf(url))
-    urlIndex=specificStore.storeSliderImages.indexOf(url);
+    urlIndex = specificStore.storeSliderImages.indexOf(url);
     // console.log(req.body)
     await Merchants.updateOne(
-        {email:email},
-        { $pull: { storeSliderImages: {$in: [specificStore.storeSliderImages[urlIndex]]} } },
+        { email: email },
+        { $pull: { storeSliderImages: { $in: [specificStore.storeSliderImages[urlIndex]] } } },
         { new: true },
-        
-      );
-      
-    console.log(await Merchants.find({email:email}))
-    res.send({Result: "Category Deleted Successfully!!"})
+
+    );
+
+    console.log(await Merchants.find({ email: email }))
+    res.send({ Result: "Category Deleted Successfully!!" })
 }
 
-const testSpecificCart = async(req,res)=>{
+const testSpecificCart = async (req, res) => {
     try {
         const email = req.params.email
         // Extract necessary information from the request body
-        const { cartPrimaryImage ,cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite, cartQuantities} = req.body;
+        const { cartPrimaryImage, cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite, cartQuantities } = req.body;
 
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -644,7 +648,7 @@ const testSpecificCart = async(req,res)=>{
         });
 
 
-        
+
 
         // Save the new cart
         await newCart.save();
@@ -658,12 +662,12 @@ const testSpecificCart = async(req,res)=>{
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-        
+
 }
 
-const testGetMerchantCart = async(req,res)=>{
+const testGetMerchantCart = async (req, res) => {
     try {
-        
+
         const email = req.params.email
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -672,29 +676,29 @@ const testGetMerchantCart = async(req,res)=>{
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        const merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
 
-        res.status(201).json( merchantsWithCarts[0] );
+        res.status(201).json(merchantsWithCarts[0]);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-const testGetMerchantCartContent = async (req,res)=>{
+const testGetMerchantCartContent = async (req, res) => {
     res.send(await Carts.find({}))
 }
 
-const cartUploadPrimaryImage = async(req,res)=>{
+const cartUploadPrimaryImage = async (req, res) => {
     console.log("test")
     var email = req.body.email;
     var index = req.body.index;
     // console.log(email,index)
-    const user = await Merchants.findOne({email:email}).populate("type");
+    const user = await Merchants.findOne({ email: email }).populate("type");
     // console.log(user)
-     cloudinary.uploader.upload(req.file.path, async function(err, result)  {
+    cloudinary.uploader.upload(req.file.path, async function (err, result) {
         // console.log(err)
-        if(err){
+        if (err) {
             console.log(err);
             return res.status(500).send({
                 success: false,
@@ -706,108 +710,108 @@ const cartUploadPrimaryImage = async(req,res)=>{
         const cartId = user.type[index]._id;
         const cart = await Carts.findByIdAndUpdate(cartId, {
             cartPrimaryImage: result.url,
-          });
-        
+        });
+
         res.status(200).send({
             success: true,
             message: "Uploaded",
             data: user,
-            email:email,
+            email: email,
         })
     })
     // console.log(req.file.path)
     // res.send({ status: "Success" });
 }
 
-const activateStoreSlider = async(req,res)=>{
-    try{
-        const {activateSlider} = req.body;
+const activateStoreSlider = async (req, res) => {
+    try {
+        const { activateSlider } = req.body;
         console.log(activateSlider);
 
         const filter = { email: req.params.email };
         console.log(filter)
-        const update = { activateSlider: activateSlider,};
+        const update = { activateSlider: activateSlider, };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
         console.log(Merchants)
         console.log(update)
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
+
         console.log(updatedMerchantProfile)
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
-const activateStoreCategory = async(req,res)=>{
-    try{
-        const {activateCategory} = req.body;
+const activateStoreCategory = async (req, res) => {
+    try {
+        const { activateCategory } = req.body;
         console.log(activateCategory);
 
         const filter = { email: req.params.email };
         console.log(filter)
-        const update = { activateCategory: activateCategory,};
+        const update = { activateCategory: activateCategory, };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
         console.log(Merchants)
         console.log(update)
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
+
         console.log(updatedMerchantProfile)
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
-const activateStoreCarts = async(req,res)=>{
-    try{
-        const {activateCarts} = req.body;
+const activateStoreCarts = async (req, res) => {
+    try {
+        const { activateCarts } = req.body;
         console.log(activateCarts);
 
         const filter = { email: req.params.email };
         console.log(filter)
-        const update = { activateCarts: activateCarts,};
+        const update = { activateCarts: activateCarts, };
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
         console.log(Merchants)
         console.log(update)
         const updatedMerchantProfile = await Merchants.findOneAndUpdate(filter, update, options);
-        
+
         console.log(updatedMerchantProfile)
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         ////////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 }
 
-const cartUploadSecondaryImages = async (req,res)=>{
+const cartUploadSecondaryImages = async (req, res) => {
     {
         console.log("test")
         var email = req.body.email;
         var index = req.body.index;
         // console.log(email,index)
-        const user = await Merchants.findOne({email:email}).populate("type");
+        const user = await Merchants.findOne({ email: email }).populate("type");
         // console.log(user)
-         cloudinary.uploader.upload(req.file.path, async function(err, result)  {
+        cloudinary.uploader.upload(req.file.path, async function (err, result) {
             // console.log(err)
-            if(err){
+            if (err) {
                 console.log(err);
                 return res.status(500).send({
                     success: false,
@@ -818,14 +822,14 @@ const cartUploadSecondaryImages = async (req,res)=>{
             console.log(result.url)
             const cartId = user.type[index]._id;
             const cart = await Carts.findByIdAndUpdate(cartId, {
-                $push: {cartSecondaryImagesSlider: result.url},
-              });
-            
+                $push: { cartSecondaryImagesSlider: result.url },
+            });
+
             res.status(200).send({
                 success: true,
                 message: "Uploaded",
                 data: user,
-                email:email,
+                email: email,
             })
         })
         // console.log(req.file.path)
@@ -833,42 +837,42 @@ const cartUploadSecondaryImages = async (req,res)=>{
     }
 }
 
-const deleteSpecificImageFromCartImageSlider = async(req,res)=>{
+const deleteSpecificImageFromCartImageSlider = async (req, res) => {
     console.log(1)
     const email = req.params.email;
     const url = req.body.url;
     const index = req.body.index;
-    
-    
-    const specificStore = await Merchants.findOne({email:email}).populate("type")
+
+
+    const specificStore = await Merchants.findOne({ email: email }).populate("type")
     // console.log(specificStore);
     const cartId = specificStore.type[index]._id;
-            const cart = await Carts.findByIdAndUpdate(cartId, {
-                $pull: {cartSecondaryImagesSlider: url},
-              });
-      
+    const cart = await Carts.findByIdAndUpdate(cartId, {
+        $pull: { cartSecondaryImagesSlider: url },
+    });
+
     console.log(await Carts.findById(cartId))
-    res.send({Result: "Category Deleted Successfully!!"})
+    res.send({ Result: "Category Deleted Successfully!!" })
 }
 
 
 function isEmptyString(value) {
     return typeof value === 'string' && value.trim() === '';
-  }
+}
 
 
-const testUpdateSpecificCart = async (req,res)=>{
+const testUpdateSpecificCart = async (req, res) => {
 
     ///////////////
-    try{
+    try {
         const index = req.body.index;
         const emailParams = req.params.email
         console.log(emailParams)
         // Get Origin Data from DB
-        const merchant = await Merchants.findOne({email: emailParams}).populate("type")
+        const merchant = await Merchants.findOne({ email: emailParams }).populate("type")
         console.log(merchant.type);
         // var emailDB = merchant[0].email;
-        
+
         var cartNameDB = merchant.type[index].cartName;
         var cartPriceDB = merchant.type[index].cartPrice;
         var cartDiscountDB = merchant.type[index].cartDiscount;
@@ -878,8 +882,8 @@ const testUpdateSpecificCart = async (req,res)=>{
         var cartCategoryDB = merchant.type[index].cartCategory;
         var cartQuantitiesDB = merchant.type[index].cartQuantities;
         var cartRateDB = merchant.type[index].cartRate;
-        
-        
+
+
         console.log(cartNameDB);
         console.log(cartPriceDB);
         console.log(cartDiscountDB);
@@ -892,119 +896,119 @@ const testUpdateSpecificCart = async (req,res)=>{
 
         // Get Data Coming from Client 
 
-        var {cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities,  cartRate} = req.body;
-        
+        var { cartName, cartPrice, cartDiscount, cartLiked, cartFavourite, cartDescription, cartCategory, cartQuantities, cartRate } = req.body;
+
         console.log("++++++++++++++++++++++++++++++");
         console.log(req.body);
         console.log("++++++++++++++++++++++++++++++");
 
-        
+
         ////////////
         const filter = { email: emailParams };
-        
-        const update = {  
-            cartName: cartName.trim() != "" ? cartNameDB = cartName : cartNameDB = cartNameDB, 
-            cartPrice: cartPrice != "" ? cartPriceDB = cartPrice : cartPriceDB = cartPriceDB, 
-            cartDescription: cartDescription.trim() != "" ? cartDescriptionDB = cartDescription : cartDescriptionDB = cartDescriptionDB, 
-            cartCategory: cartCategory.trim() != "" ? cartCategoryDB = cartCategory : cartCategoryDB = cartCategoryDB, 
+
+        const update = {
+            cartName: cartName.trim() != "" ? cartNameDB = cartName : cartNameDB = cartNameDB,
+            cartPrice: cartPrice != "" ? cartPriceDB = cartPrice : cartPriceDB = cartPriceDB,
+            cartDescription: cartDescription.trim() != "" ? cartDescriptionDB = cartDescription : cartDescriptionDB = cartDescriptionDB,
+            cartCategory: cartCategory.trim() != "" ? cartCategoryDB = cartCategory : cartCategoryDB = cartCategoryDB,
             cartQuantities: cartQuantities != "" ? cartQuantitiesDB = cartQuantities : cartQuantitiesDB = cartQuantitiesDB,
             cartRate: cartRate != "" ? cartRateDB = cartRate : cartRateDB = cartRateDB,
             cartDiscount: cartDiscount,
-            cartLiked: cartLiked, 
+            cartLiked: cartLiked,
             cartFavourite: cartFavourite,
-        
-         };
+
+        };
 
         console.log(update)
         const options = { new: true, upsert: true }; // Set `new` to true to return the updated document
-        
-            const cartId = merchant.type[index]._id;
-        
+
+        const cartId = merchant.type[index]._id;
+
         const updatedMerchantProfile = await Carts.findOneAndUpdate(cartId, update, options);
-        
-        
+
+
         if (!updatedMerchantProfile) {
             // Handle the case where the merchant with the given email was not found
             return res.status(404).send({ Message: "Merchant not found" });
         }
         ////////
-        res.status(200).send({Message: "Your profile data updated successfuly!"})
-    }catch(error){
+        res.status(200).send({ Message: "Your profile data updated successfuly!" })
+    } catch (error) {
         console.error(error);
-        res.status(500).send({Error:error})
+        res.status(500).send({ Error: error })
     }
 
 
 
 }
 
-const deleteCart = async (req,res)=>{
+const deleteCart = async (req, res) => {
     console.log(1)
     const email = req.params.email;
     const index = req.body.index;
-    
-    
-    const specificStore = await Merchants.findOne({email:email}).populate("type")
+
+
+    const specificStore = await Merchants.findOne({ email: email }).populate("type")
     // console.log(specificStore);
     const cartId = specificStore.type[index]._id;
-            const cart = await Carts.findByIdAndDelete(cartId);
-      
+    const cart = await Carts.findByIdAndDelete(cartId);
+
     console.log(await Carts.find({}))
-    res.send({Result: "Cart Deleted Successfully!!"})
+    res.send({ Result: "Cart Deleted Successfully!!" })
 }
 
 
-const deleteCategoryConnectedToCarts = async (req,res)=>{
+const deleteCategoryConnectedToCarts = async (req, res) => {
 
     console.log(1)
     const email = req.params.email;
     const index = req.body.index;
-    
+
     console.log(email, index)
-    
-    const specificStore = await Merchants.findOne({email:email}).populate("type")
+
+    const specificStore = await Merchants.findOne({ email: email }).populate("type")
     // console.log(specificStore);
     console.log(specificStore.type)
-    for(i=0; i < specificStore.type.length; i++){
-        if(specificStore.type[i].cartCategory == specificStore.specificStoreCategories[index]){
+    for (i = 0; i < specificStore.type.length; i++) {
+        if (specificStore.type[i].cartCategory == specificStore.specificStoreCategories[index]) {
             const cartId = specificStore.type[i]._id;
             const cart = await Carts.findByIdAndDelete(cartId);
             await Merchants.updateOne(
-                {email:email},
-                { $pull: { type: {$in: [specificStore.type[i]]} } },
+                { email: email },
+                { $pull: { type: { $in: [specificStore.type[i]] } } },
                 { new: true },
-                
-              );
+
+            );
         }
     }
-    
 
-    const specificCategory = await Merchants.findOne({email:email})
+
+    const specificCategory = await Merchants.findOne({ email: email })
     await Merchants.updateOne(
-        {email:email},
-        { $pull: { specificStoreCategories: {$in: [specificCategory.specificStoreCategories[index]]} } },
+        { email: email },
+        { $pull: { specificStoreCategories: { $in: [specificCategory.specificStoreCategories[index]] } } },
         { new: true },
-        
-      );
-      
+
+    );
+
     // console.log(await Merchants.find({email:email}))
-    res.send({Result: "Category Deleted Successfully!!"})
+    res.send({ Result: "Category Deleted Successfully!!" })
 }
 
 
-const merchantAddStoreToDatabase = async (req,res)=>{
+const merchantAddStoreToDatabase = async (req, res) => {
     try {
         const emailParams = req.params.email
         // Extract necessary information from the request body
-        const { merchantname, email, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, activateSlider, activateCategory, activateCarts, specificStoreCategories, type} = req.body.stores;
-    //    console.log(req.body.stores)
-       console.log("--------------------------")
-       console.log("--------------------------")
-       console.log("--------------------------")
+        const { merchantname, email, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, activateSlider, activateCategory, activateCarts, specificStoreCategories, type } = req.body.stores;
+        //    console.log(req.body.stores)
+        console.log("--------------------------")
+        console.log("--------------------------")
+        console.log("--------------------------")
 
         // Find the existing document
         let storeDocument = await Store.findOne({}); // Assuming there's only one document
-        
+
         // If no document found, create a new one
         if (!storeDocument) {
             storeDocument = new Store(
@@ -1012,33 +1016,33 @@ const merchantAddStoreToDatabase = async (req,res)=>{
             );
             console.log("Store Created!!")
         }
-        let counter = 0; 
+        let counter = 0;
         // console.log(storeDocument.stores)
         // console.log("--------------------------")
         // console.log("--------------------------")
 
-        for(let i = 0; i<storeDocument.stores.length; i++){
-            if(storeDocument.stores[i].email == emailParams){
+        for (let i = 0; i < storeDocument.stores.length; i++) {
+            if (storeDocument.stores[i].email == emailParams) {
                 counter++;
-            } else{
-                counter=0;
+            } else {
+                counter = 0;
             }
         }
         console.log(counter)
-        if(counter != 0){
-            if(counter == 1){
+        if (counter != 0) {
+            if (counter == 1) {
                 console.log(emailParams)
                 const tempStore = await Store.findOne({});
                 // console.log(tempStore.stores)
-                for(let i=0; i<tempStore.stores.length; i++){
-                    if(tempStore.stores[i].email == emailParams){
+                for (let i = 0; i < tempStore.stores.length; i++) {
+                    if (tempStore.stores[i].email == emailParams) {
 
                         let foundObject = tempStore.stores.find(obj => obj.email === emailParams);
                         if (foundObject) {
-                            foundObject.merchantname= merchantname;
-                            foundObject.email= emailParams;
-                            foundObject.phone= phone;
-                            foundObject.country =country;
+                            foundObject.merchantname = merchantname;
+                            foundObject.email = emailParams;
+                            foundObject.phone = phone;
+                            foundObject.country = country;
                             foundObject.Avatar = Avatar;
                             foundObject.storeName = storeName;
                             foundObject.storeAvatar = storeAvatar;
@@ -1050,106 +1054,106 @@ const merchantAddStoreToDatabase = async (req,res)=>{
                             foundObject.activateSlider = activateSlider;
                             foundObject.activateCategory = activateCategory;
                             foundObject.activateCarts = activateCarts;
-                            foundObject.specificStoreCategories=specificStoreCategories,
-                            // foundObject.type = type,
-                            console.log("---------==")
+                            foundObject.specificStoreCategories = specificStoreCategories,
+                                // foundObject.type = type,
+                                console.log("---------==")
                             console.log(foundObject)
                             Store.findOneAndUpdate(
-                                {email: emailParams},
+                                { email: emailParams },
                                 { $set: { "stores": foundObject } },
                                 { new: true },
                             )
                             console.log("Object updated successfully!");
                             await tempStore.save();
-                            return res.send({Message: "This store data is exist, You can update it"})
+                            return res.send({ Message: "This store data is exist, You can update it" })
                         } else {
                             console.log("Object with specified ID not found!");
-                            return res.send({Message: "Object with specified ID not found!"});
+                            return res.send({ Message: "Object with specified ID not found!" });
                         }
-                       
-                         
-                    } 
+
+
+                    }
                 }
-                
-                     
+
+
             } else
-            res.send({Message: "This store data is exist"})
-        } 
-        else{
-        // Push the new store object into the stores array
-        console.log("PPPPPPPPPPPPPPPPPPPP")
-        console.log(req.body.stores)
-        console.log("PPPPPPPPPPPPPPPPPPPP")
-    
-        storeDocument.stores.push(
-            {
-            merchantname: merchantname,
-            email: emailParams,
-            phone: phone,
-            country: country,
-            Avatar: Avatar,
-            storeName: storeName,
-            storeAvatar: storeAvatar,
-            storeCategory: storeCategory,
-            storeSliderImages: storeSliderImages,
-            storeProductImages: storeProductImages,
-            storeDescription: storeDescription,
-            storeSocialMediaAccounts: storeSocialMediaAccounts,
-            activateSlider: activateSlider,
-            activateCategory: activateCategory,
-            activateCarts: activateCarts, 
-            specificStoreCategories: specificStoreCategories,
-            // type: type,
+                res.send({ Message: "This store data is exist" })
         }
-        );
+        else {
+            // Push the new store object into the stores array
+            console.log("PPPPPPPPPPPPPPPPPPPP")
+            console.log(req.body.stores)
+            console.log("PPPPPPPPPPPPPPPPPPPP")
 
-        // Save the document
-        await storeDocument.save();
-               
-      
-        
+            storeDocument.stores.push(
+                {
+                    merchantname: merchantname,
+                    email: emailParams,
+                    phone: phone,
+                    country: country,
+                    Avatar: Avatar,
+                    storeName: storeName,
+                    storeAvatar: storeAvatar,
+                    storeCategory: storeCategory,
+                    storeSliderImages: storeSliderImages,
+                    storeProductImages: storeProductImages,
+                    storeDescription: storeDescription,
+                    storeSocialMediaAccounts: storeSocialMediaAccounts,
+                    activateSlider: activateSlider,
+                    activateCategory: activateCategory,
+                    activateCarts: activateCarts,
+                    specificStoreCategories: specificStoreCategories,
+                    // type: type,
+                }
+            );
 
-        res.status(201).json({ message: "Cart added to List of Stores successfully" });
-    }
+            // Save the document
+            await storeDocument.save();
+
+
+
+
+            res.status(201).json({ message: "Cart added to List of Stores successfully" });
+        }
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-const getAllStores = async (req,res)=>{
+const getAllStores = async (req, res) => {
     const stores = await Store.find({});
     console.log(stores)
-    if(stores.length == 0){
+    if (stores.length == 0) {
         console.log("No any Store")
-        res.send({Message: "No any Store"})
-    } 
+        res.send({ Message: "No any Store" })
+    }
     else
         res.send(stores[0].stores);
 }
 
-const getAllStoresForOneCategory = async (req,res)=>{
+const getAllStoresForOneCategory = async (req, res) => {
     const storeCategory = req.params.storeCategory;
     const stores = await Store.find();
-    var tempStores = stores[0].stores.filter(element=> element.storeCategory == storeCategory)
+    var tempStores = stores[0].stores.filter(element => element.storeCategory == storeCategory)
     res.send(tempStores)
 }
 
-const storeData = async (req,res)=>{
-    try{
+const storeData = async (req, res) => {
+    try {
         console.log(req.params.email)
-        const merchant = await Merchants.findOne({email:req.params.email});
+        const merchant = await Merchants.findOne({ email: req.params.email });
         console.log(merchant);
         res.status(200).send(merchant);
     }
-    catch(err){
-        res.status(500).send({Message: err})
+    catch (err) {
+        res.status(500).send({ Message: err })
     }
 }
 
-const testGetStoreCart = async (req,res)=>{
+const testGetStoreCart = async (req, res) => {
     try {
-        
+
         const email = req.params.email
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -1158,106 +1162,106 @@ const testGetStoreCart = async (req,res)=>{
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        const merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
 
-        res.status(201).json( merchantsWithCarts[0] );
+        res.status(201).json(merchantsWithCarts[0]);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-const getAllCartsForOneCategory = async(req,res)=>{
+const getAllCartsForOneCategory = async (req, res) => {
     const email = req.query.email;
     const cartCategory = req.query.cartCategory;
-    const carts = await Merchants.find({email:email}).populate("type");
+    const carts = await Merchants.find({ email: email }).populate("type");
     // console.log(carts[0].type)
-    var tempCarts = carts[0].type.filter(element=> element.cartCategory== cartCategory)
+    var tempCarts = carts[0].type.filter(element => element.cartCategory == cartCategory)
     res.send(tempCarts)
 }
 
-const deleteStore = async (req,res)=>{
+const deleteStore = async (req, res) => {
     const tempStore = await Store.findOne()
     console.log(tempStore.stores.length)
-    if(tempStore.stores.length != 0){
+    if (tempStore.stores.length != 0) {
         console.log(req.params.email)
         console.log(tempStore)
-        const store = tempStore.stores.filter(store=>store.email!=req.params.email)
+        const store = tempStore.stores.filter(store => store.email != req.params.email)
         tempStore.stores = store;
         await tempStore.save()
         console.log(tempStore.stores)
-        await Merchants.findOneAndDelete({email: req.params.email})
-        res.send({Message: "The store deleted successfuly"})
-    } else{
-    console.log("No store to delete")
-    res.send({Message: "No store to delete"})
+        await Merchants.findOneAndDelete({ email: req.params.email })
+        res.send({ Message: "The store deleted successfuly" })
+    } else {
+        console.log("No store to delete")
+        res.send({ Message: "No store to delete" })
     }
-    
+
 }
 
-const addPaymentMethod = async (req,res)=>{
+const addPaymentMethod = async (req, res) => {
     console.log(req.params.email);
     console.log(req.body);
-    const merchant = await Merchants.find({email:req.params.email});
-    await Merchants.findOneAndUpdate({email:req.params.email},{"publishableKey": req.body.publishableKey, "secretKey": req.body.secretKey}, { new: true })
-    res.send({Message: "Payment informations added successfully!!"});
+    const merchant = await Merchants.find({ email: req.params.email });
+    await Merchants.findOneAndUpdate({ email: req.params.email }, { "publishableKey": req.body.publishableKey, "secretKey": req.body.secretKey }, { new: true })
+    res.send({ Message: "Payment informations added successfully!!" });
 }
 
-const getPaymentMethod = async (req, res)=>{
-    const merchants = await Merchants.find({email:req.params.email});
+const getPaymentMethod = async (req, res) => {
+    const merchants = await Merchants.find({ email: req.params.email });
     res.send(merchants[0]);
 }
 
-const customerAddToFavoriteList = async (req, res) =>{
+const customerAddToFavoriteList = async (req, res) => {
     const user = await Users.find({ email: req.params.email });
 
     const isProductInFavoriteList = user[0].favouriteList.filter(element => element.cartName == req.body.favouriteList.cartName);
 
-        if(isProductInFavoriteList.length != 0) {
-            // console.log(element);
-            const fromDifferentStores = user[0].favouriteList.filter(element => element.merchant == req.body.favouriteList.merchant);
-            if(fromDifferentStores != 0)
-                res.send({Message: "This product is exist in your favorite list"});
-            else {
-                user[0].favouriteList.push(req.body.favouriteList)
-                await user[0].save();
-                console.log(user);
-                res.send({Message: "This product is added to favorite list successfully!"});
-            }
-        } else {
+    if (isProductInFavoriteList.length != 0) {
+        // console.log(element);
+        const fromDifferentStores = user[0].favouriteList.filter(element => element.merchant == req.body.favouriteList.merchant);
+        if (fromDifferentStores != 0)
+            res.send({ Message: "This product is exist in your favorite list" });
+        else {
             user[0].favouriteList.push(req.body.favouriteList)
             await user[0].save();
             console.log(user);
-            res.send({Message: "This product is added to favorite list successfully!"});
+            res.send({ Message: "This product is added to favorite list successfully!" });
         }
+    } else {
+        user[0].favouriteList.push(req.body.favouriteList)
+        await user[0].save();
+        console.log(user);
+        res.send({ Message: "This product is added to favorite list successfully!" });
+    }
 
-    
+
     // console.log(temp);
-    
+
     // // const user = await Users.find({ email: req.params.email });
-    
+
 }
 
-const getCustomerFavoriteList = async (req, res) =>{
+const getCustomerFavoriteList = async (req, res) => {
     const user = await Users.find({ email: req.params.email });
     console.log(user[0].favouriteList);
     res.send(user[0].favouriteList);
 }
 
-const deleteProductFromFavoriteList = async (req, res)=>{
+const deleteProductFromFavoriteList = async (req, res) => {
     const index = req.body.index;
     const user = await Users.find({ email: req.params.email });
     user[0].favouriteList.splice(index, 1)
     await user[0].save();
     console.log(user[0].favouriteList);
-    
+
     res.send("success");
 }
 
 
-const deleteProductFromFavoriteListFromDifferentStores = async (req, res)=>{
+const deleteProductFromFavoriteListFromDifferentStores = async (req, res) => {
     try {
-    const user = await Users.findOne({ email: req.params.email });
+        const user = await Users.findOne({ email: req.params.email });
         if (!user) {
             return res.status(404).send('User not found');
         }
@@ -1265,7 +1269,7 @@ const deleteProductFromFavoriteListFromDifferentStores = async (req, res)=>{
         // console.log(user);
 
         // Filter out the product with the specified cartName and merchant
-        const temp = user.favouriteList.findIndex(element => 
+        const temp = user.favouriteList.findIndex(element =>
             element.cartName == req.body.cartName && element.merchant == req.body.merchant
         );
 
@@ -1281,12 +1285,12 @@ const deleteProductFromFavoriteListFromDifferentStores = async (req, res)=>{
     } catch (error) {
         console.error(error);
         res.status(500).send('Internal Server Error');
-}
+    }
 
 }
 
-const addStoreIndex = async (req, res) =>{
-    
+const addStoreIndex = async (req, res) => {
+
     try {
         await IndexModel.deleteMany({});
         console.log("++++++++++++++++++++++++++++++++");
@@ -1294,7 +1298,7 @@ const addStoreIndex = async (req, res) =>{
         const filter = { value: req.body.index };
         const update = { value: req.body.index };
         const options = { upsert: true, new: true };
-    
+
         const result = await IndexModel.findOneAndUpdate(filter, update, options);
         await result.save();
         console.log('Index created or updated:', result);
@@ -1302,30 +1306,30 @@ const addStoreIndex = async (req, res) =>{
     } catch (error) {
         console.error('Error creating or updating index:', error);
     }
-      
+
 }
 
-const getStoreIndex = async (req, res) =>{
-    
+const getStoreIndex = async (req, res) => {
+
     try {
         const index = await IndexModel.findOne({});
         res.send(index);
     } catch (error) {
         console.error('Error creating or updating index:', error);
     }
-      
+
 }
 
-const customerGetFavoriteProductsDependOnCategory = async (req, res)=>{
+const customerGetFavoriteProductsDependOnCategory = async (req, res) => {
 
     ////////////////////////////////////////////////////////////////////// get all store Products
 
     try {
-        let commonElement = [] ;
-        let commonElement1 = [] ;
-        let commonElementForFind = [] ;
+        let commonElement = [];
+        let commonElement1 = [];
+        let commonElementForFind = [];
         const cartCategory = req.query.cartCategory;
-        
+
         const email = req.query.email
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -1334,7 +1338,7 @@ const customerGetFavoriteProductsDependOnCategory = async (req, res)=>{
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        const merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        const merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
 
         const allStoreCarts = merchantsWithCarts[0].type;
         console.log("!!!!!");
@@ -1353,44 +1357,44 @@ const customerGetFavoriteProductsDependOnCategory = async (req, res)=>{
 
         /////////////////////////////////////////////////////////////////////
 
-        for(let i = 0; i < favoriteList.length; i++){
-            for(let j = 0; j < allStoreCarts.length; j++) {
-              if(favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant){
-                commonElement.push(favoriteList[i]);
-              }
+        for (let i = 0; i < favoriteList.length; i++) {
+            for (let j = 0; j < allStoreCarts.length; j++) {
+                if (favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant) {
+                    commonElement.push(favoriteList[i]);
+                }
             }
-          }
-          for(let i = 0; i < favoriteList.length; i++){
-            for(let j = 0; j < allStoreCarts.length; j++) {
-              if(favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant){
-                commonElementForFind.push(favoriteList[i].cartName);
-              }
+        }
+        for (let i = 0; i < favoriteList.length; i++) {
+            for (let j = 0; j < allStoreCarts.length; j++) {
+                if (favoriteList[i].cartName == allStoreCarts[j].cartName && favoriteList[i].merchant == allStoreCarts[j].merchant) {
+                    commonElementForFind.push(favoriteList[i].cartName);
+                }
             }
-          }
-        
+        }
+
         commonElement1 = allStoreCarts.filter((element) => !commonElementForFind.includes(element.cartName));
 
         // console.log(commonElement);
         // console.log(commonElement1);
 
         var combinedArray = [...commonElement, ...commonElement1];
-        combinedArray = combinedArray.filter(element => element.cartCategory == cartCategory )
+        combinedArray = combinedArray.filter(element => element.cartCategory == cartCategory)
         console.log(combinedArray);
         console.log(combinedArray.length);
 
 
-        res.status(201).json( combinedArray );
+        res.status(201).json(combinedArray);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
-    
-    
+
+
 
 }
 
 
-const customerAddToCartList = async (req, res)=>{
+const customerAddToCartList = async (req, res) => {
     const user = await Users.find({ email: req.params.email });
     // console.log(req.body.cartList);
     const cartListObj = req.body.cartList;
@@ -1401,64 +1405,64 @@ const customerAddToCartList = async (req, res)=>{
 
     const isProductInCartList = user[0].cartList.filter(element => element.cartName == cartListObj.cartName);
 
-        if(isProductInCartList.length != 0) {
-            // console.log(element);
-            const fromDifferentStores = user[0].cartList.filter(element => element.merchant == cartListObj.merchant);
-            if(fromDifferentStores != 0)
-                res.send({Message: "This product is exist in your favorite list"});
-            else {
-                user[0].cartList.push(cartListObj)
-                await user[0].save();
-                console.log(user);
-                res.send({Message: "This product is added to favorite list successfully!"});
-            }
-        } else {
+    if (isProductInCartList.length != 0) {
+        // console.log(element);
+        const fromDifferentStores = user[0].cartList.filter(element => element.merchant == cartListObj.merchant);
+        if (fromDifferentStores != 0)
+            res.send({ Message: "This product is exist in your favorite list" });
+        else {
             user[0].cartList.push(cartListObj)
             await user[0].save();
             console.log(user);
-            res.send({Message: "This product is added to favorite list successfully!"});
+            res.send({ Message: "This product is added to favorite list successfully!" });
         }
+    } else {
+        user[0].cartList.push(cartListObj)
+        await user[0].save();
+        console.log(user);
+        res.send({ Message: "This product is added to favorite list successfully!" });
+    }
 
-    
+
     // console.log(temp);
-    
+
     // // const user = await Users.find({ email: req.params.email });
 }
 
 
-const getCustomerCartList = async ( req, res)=>{
+const getCustomerCartList = async (req, res) => {
     const user = await Users.find({ email: req.params.email });
     console.log(user[0].cartList);
     res.send(user[0].cartList);
 }
 
 
-const deleteProductFromCartListFromDifferentStores = async ( req, res )=>{
+const deleteProductFromCartListFromDifferentStores = async (req, res) => {
     try {
         const user = await Users.findOne({ email: req.params.email });
-            if (!user) {
-                return res.status(404).send('User not found');
-            }
-    
-            // console.log(user);
-    
-            // Filter out the product with the specified cartName and merchant
-            const temp = user.cartList.findIndex(element => 
-                element.cartName == req.body.cartName && element.merchant == req.body.merchant
-            );
-    
-            user.cartList.splice(temp, 1)
-            // console.log(temp);
-            // console.log(user.favouriteList);
-    
-            // Save the updated user document
-            await user.save();
-    
-            // console.log(user.favouriteList);
-            res.send({ Message: "Product deleted from cart list successfully!" });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+
+        // console.log(user);
+
+        // Filter out the product with the specified cartName and merchant
+        const temp = user.cartList.findIndex(element =>
+            element.cartName == req.body.cartName && element.merchant == req.body.merchant
+        );
+
+        user.cartList.splice(temp, 1)
+        // console.log(temp);
+        // console.log(user.favouriteList);
+
+        // Save the updated user document
+        await user.save();
+
+        // console.log(user.favouriteList);
+        res.send({ Message: "Product deleted from cart list successfully!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 }
 
@@ -1468,14 +1472,14 @@ const customerPayForProducts = async (req, res) => {
         // Fetch user data based on email
         const user = await Users.findOne({ email: req.params.email });
         console.log(user.cartList);
-        for(let i=0; i<user.cartList.length; i++){
-            const merchantId= user.cartList[i].merchant; // need modify index
+        for (let i = 0; i < user.cartList.length; i++) {
+            const merchantId = user.cartList[i].merchant; // need modify index
             console.log(merchantId);
             const merchant = await Merchants.findById(merchantId);
             console.log(merchant.publishableKey);
             console.log(merchant.secretKey);
             console.log(merchant);
-            temp.push({email: merchant.email, publishableKey: merchant.publishableKey, secretKey: merchant.secretKey, merchant: merchant.id })
+            temp.push({ email: merchant.email, publishableKey: merchant.publishableKey, secretKey: merchant.secretKey, merchant: merchant.id })
         }
         res.send(temp);
     } catch (error) {
@@ -1484,27 +1488,27 @@ const customerPayForProducts = async (req, res) => {
     }
 }
 
-const deleteAllProductsFromCartList = async ( req, res )=>{
+const deleteAllProductsFromCartList = async (req, res) => {
     try {
         const user = await Users.findOne({ email: req.params.email });
-            if (!user) {
-                return res.status(404).send('User not found');
-            }
-            user.cartList = [];
-            
-            await user.save();
-            console.log(user);
-    
-            // console.log(user.favouriteList);
-            res.send({ Message: "All Products Deleted successfully!" });
-        } catch (error) {
-            console.error(error);
-            res.status(500).send('Internal Server Error');
+        if (!user) {
+            return res.status(404).send('User not found');
+        }
+        user.cartList = [];
+
+        await user.save();
+        console.log(user);
+
+        // console.log(user.favouriteList);
+        res.send({ Message: "All Products Deleted successfully!" });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal Server Error');
     }
 }
 
 
-const incrementMostViewed = async (req, res)=>{
+const incrementMostViewed = async (req, res) => {
     try {
         const email = req.params.email
         const productIndex = req.body.productIndex;
@@ -1517,61 +1521,61 @@ const incrementMostViewed = async (req, res)=>{
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        let merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        let merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
         console.log(merchantsWithCarts[0].type[productIndex]);
         merchantsWithCarts[0].type[productIndex].forMostViewed = forMostViewed;
         await merchantsWithCarts[0].type[productIndex].save();
         await merchant.save();
 
         merchant = await Merchants.findOne({ email: email });
-        merchantsWithCarts = await Merchants.find({email:email}).populate('type');
+        merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
         console.log(merchantsWithCarts[0].type[productIndex]);
 
-        res.status(201).json( merchantsWithCarts[0].type[productIndex] );
+        res.status(201).json(merchantsWithCarts[0].type[productIndex]);
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-const getStatisticsAboutProducts = async (req, res)=>{
-        const email = req.params.email
-        const productIndex = req.body.productIndex;
-        console.log(email);
-        console.log(req.body);
-        // Find the merchant using the provided email
-        let merchant = await Merchants.findOne({ email: email });
+const getStatisticsAboutProducts = async (req, res) => {
+    const email = req.params.email
+    const productIndex = req.body.productIndex;
+    console.log(email);
+    console.log(req.body);
+    // Find the merchant using the provided email
+    let merchant = await Merchants.findOne({ email: email });
 
-        if (!merchant) {
-            return res.status(404).json({ error: "Merchant not found" });
-        }
+    if (!merchant) {
+        return res.status(404).json({ error: "Merchant not found" });
+    }
 
-        let merchantsWithCarts = await Merchants.find({email:email}).populate('type');
-        console.log(merchantsWithCarts[0].type[productIndex]);
-       
+    let merchantsWithCarts = await Merchants.find({ email: email }).populate('type');
+    console.log(merchantsWithCarts[0].type[productIndex]);
 
-        res.status(201).json( {
-            mostViewed: merchantsWithCarts[0].type[productIndex].forMostViewed,
-            forTopRated: merchantsWithCarts[0].type[productIndex].forTopRated,
-            forBestSeller: merchantsWithCarts[0].type[productIndex].forBestSeller,
-        } );
+
+    res.status(201).json({
+        mostViewed: merchantsWithCarts[0].type[productIndex].forMostViewed,
+        forTopRated: merchantsWithCarts[0].type[productIndex].forTopRated,
+        forBestSeller: merchantsWithCarts[0].type[productIndex].forBestSeller,
+    });
 }
 
 
-const getStatisticsAboutProductsForCategory = async(req,res)=>{
+const getStatisticsAboutProductsForCategory = async (req, res) => {
     const email = req.params.email;
     const productIndex = req.body.productIndex;
     console.log(email);
     console.log(req.body);
-    
+
     const cartCategory = req.body.cartCategory;
-    const carts = await Merchants.find({email:email}).populate("type");
+    const carts = await Merchants.find({ email: email }).populate("type");
     // console.log(carts[0].type)
-    var tempCarts = carts[0].type.filter(element=> element.cartCategory== cartCategory)
+    var tempCarts = carts[0].type.filter(element => element.cartCategory == cartCategory)
     res.send(tempCarts)
 }
 
-const incrementMostViewedForCategory = async (req, res)=>{
+const incrementMostViewedForCategory = async (req, res) => {
     try {
         const email = req.params.email
         const productIndex = req.body.productIndex;
@@ -1587,27 +1591,27 @@ const incrementMostViewedForCategory = async (req, res)=>{
             return res.status(404).json({ error: "Merchant not found" });
         }
 
-        var tempCarts = merchant.type.filter(element=> element.cartCategory== cartCategory)
-        
+        var tempCarts = merchant.type.filter(element => element.cartCategory == cartCategory)
+
         console.log(tempCarts[productIndex]);
         tempCarts[productIndex].forMostViewed = forMostViewed;
         await tempCarts[productIndex].save();
         await merchant.save();
 
 
-        res.status(201).json( {
+        res.status(201).json({
             merchant
-        } );
-       
+        });
+
     } catch (error) {
         console.error(error);
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
 
-const addYourQuestion = async (req, res)=>{
+const addYourQuestion = async (req, res) => {
     const email = req.params.email
-        
+
     console.log(req.params);
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
@@ -1617,9 +1621,9 @@ const addYourQuestion = async (req, res)=>{
     res.send(merchant.supportFAQ);
 }
 
-const getListOfQuestion = async (req, res) =>{
+const getListOfQuestion = async (req, res) => {
     const email = req.params.email
-        
+
     console.log(req.params);
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
@@ -1627,22 +1631,22 @@ const getListOfQuestion = async (req, res) =>{
     res.send(merchant.supportFAQ);
 }
 
-const addYourAnswer = async (req, res)=>{
+const addYourAnswer = async (req, res) => {
     const email = req.params.email;
     const index = req.body.index;
     const answer = req.body.answer;
     const isAnswered = req.body.isAnswered;
-        
+
     console.log(req.params);
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
     // const question = merchant.supportFAQ[index];
-    let temp = { 
-        question: merchant.supportFAQ[index].question, 
-        isAnswered: isAnswered, 
-        answer: answer, 
-        
+    let temp = {
+        question: merchant.supportFAQ[index].question,
+        isAnswered: isAnswered,
+        answer: answer,
+
     }
     merchant.supportFAQ[index] = temp;
     await merchant.save();
@@ -1652,16 +1656,16 @@ const addYourAnswer = async (req, res)=>{
 
 const getListOfAnsweredQuestions = async (req, res) => {
     const email = req.params.email;
-    let temp =[];
-        
+    let temp = [];
+
     console.log(req.params);
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
-    for(let i=0; i<merchant.supportFAQ.length; i++){
+    for (let i = 0; i < merchant.supportFAQ.length; i++) {
         if (merchant.supportFAQ[i].hasOwnProperty("answer")) {
             temp.push(merchant.supportFAQ[i]);
-        } 
+        }
     }
 
     console.log(temp);
@@ -1669,7 +1673,7 @@ const getListOfAnsweredQuestions = async (req, res) => {
 
 }
 
-const addYourRate = async (req, res)=>{
+const addYourRate = async (req, res) => {
     const index = req.body.index;
     const productRateValue = req.body.productRateValue;
     const date = req.body.date;
@@ -1677,125 +1681,125 @@ const addYourRate = async (req, res)=>{
     const customerEmail = req.body.customerEmail;
     const imageUrl = req.body.imageUr;
     const comment = req.body.comment;
-    
+
 
     const productRate = req.body;
 
-    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    const merchant = await Merchants.findOne({ email: req.params.email }).populate("type");
     console.log(merchant.type[index].productRates);
-    
+
     const isExist = merchant.type[index].productRates.some(element => element.customerEmail == customerEmail);
-    if(!isExist && merchant.type[index].productRates!=[]){
+    if (!isExist && merchant.type[index].productRates != []) {
         merchant.type[index].productRates.push(req.body);
         await merchant.type[index].save();
         await merchant.save();
-        
+
         // console.log(productRate);
         res.send(productRate);
         return;
     }
-  
+
     res.send("Rated product Previously!!")
 
 }
 
-const getAverageProductRate = async (req, res)=>{
+const getAverageProductRate = async (req, res) => {
 
     const index = req.body.index;
-    
+
     let average = 0;
     let counter = 0;
-    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    const merchant = await Merchants.findOne({ email: req.params.email }).populate("type");
     console.log(merchant);
 
-    if(merchant.type[index].productRates.length==0){
+    if (merchant.type[index].productRates.length == 0) {
         average = 3;
-        res.send({Rate: average, numberOfRates: merchant.type[index].productRates.length})
+        res.send({ Rate: average, numberOfRates: merchant.type[index].productRates.length })
         return;
     }
-    
-    for(let i=0; i<merchant.type[index].productRates.length; i++){
-        counter+=merchant.type[index].productRates[i].productRateValue;
+
+    for (let i = 0; i < merchant.type[index].productRates.length; i++) {
+        counter += merchant.type[index].productRates[i].productRateValue;
         // console.log(merchant.type[index].productRates[i].productRateValue)
     }
 
-    average = counter/merchant.type[index].productRates.length;
+    average = counter / merchant.type[index].productRates.length;
     console.log(average);
-    res.send({Rate: average, numberOfRates: merchant.type[index].productRates.length}) 
+    res.send({ Rate: average, numberOfRates: merchant.type[index].productRates.length })
 }
 
-const getProductNameViaIndex = async (req, res) =>{
+const getProductNameViaIndex = async (req, res) => {
     const productName = req.body.productName;
-    
-    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+
+    const merchant = await Merchants.findOne({ email: req.params.email }).populate("type");
     console.log(merchant);
-    
-    for(let i=0; i<merchant.type.length; i++){
-        if(merchant.type[i].cartName==productName){
+
+    for (let i = 0; i < merchant.type.length; i++) {
+        if (merchant.type[i].cartName == productName) {
             console.log(i);
-            res.send({index: i});
-            return; 
+            res.send({ index: i });
+            return;
         }
         // console.log(merchant.type[index].productRates[i].productRateValue)
     }
-    res.send({Message: "Product not found!!"}); 
+    res.send({ Message: "Product not found!!" });
 
 }
 
 const getProductRateList = async (req, res) => {
-    
+
     const index = req.body.index;
     const customerEmail = req.body.customerEmail;
     const productRate = req.body;
-    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    const merchant = await Merchants.findOne({ email: req.params.email }).populate("type");
     console.log(merchant.type[index].productRates);
-    if( merchant.type[index].productRates == [] ){
-        res.send({ Message: "Empty List"}); 
+    if (merchant.type[index].productRates == []) {
+        res.send({ Message: "Empty List" });
         return;
     }
 
-    res.send({productRate: merchant.type[index].productRates})
-    
+    res.send({ productRate: merchant.type[index].productRates })
+
 }
 
-const getNumberOfRatesViaNumberOfStars = async (req, res)=>{
+const getNumberOfRatesViaNumberOfStars = async (req, res) => {
     const index = req.body.index;
     const customerEmail = req.body.customerEmail;
     const numberOfStars = Math.ceil(req.body.numberOfStars);
-    const merchant = await Merchants.findOne({email: req.params.email}).populate("type");
+    const merchant = await Merchants.findOne({ email: req.params.email }).populate("type");
     console.log(merchant.type[index].productRates);
 
-    let temp = merchant.type[index].productRates.filter((element)=> Math.ceil(element.productRateValue) == numberOfStars )
+    let temp = merchant.type[index].productRates.filter((element) => Math.ceil(element.productRateValue) == numberOfStars)
     console.log(temp.length);
-    res.send({result: temp.length});
+    res.send({ result: temp.length });
 }
 
 
-const addUserDeviceIdIntoList = async (req, res)=>{
+const addUserDeviceIdIntoList = async (req, res) => {
     const email = req.params.email;
     const deviceId = req.body.deviceId;
-    
+
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
-    let temp = merchant.userIdToNotify.filter((element)=> element == deviceId);
+    let temp = merchant.userIdToNotify.filter((element) => element == deviceId);
     console.log(merchant.userIdToNotify.length);
     console.log(temp.length);
-    
-    if(temp.length != 0 && merchant.userIdToNotify.length != 0){
-        res.send({Message: "This device id already exist in DB!!"});
+
+    if (temp.length != 0 && merchant.userIdToNotify.length != 0) {
+        res.send({ Message: "This device id already exist in DB!!" });
         return;
     }
-    
+
     merchant.userIdToNotify.push(deviceId);
     await merchant.save();
     console.log(merchant.userIdToNotify);
     res.send(merchant.userIdToNotify);
 }
 
-const getDeviceIdList = async ( req, res) =>{
+const getDeviceIdList = async (req, res) => {
     const email = req.params.email;
-    
+
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
@@ -1803,38 +1807,38 @@ const getDeviceIdList = async ( req, res) =>{
     res.send(merchant.userIdToNotify);
 }
 
-const deleteUserDeviceIdFromList = async (req, res) =>{
+const deleteUserDeviceIdFromList = async (req, res) => {
     const email = req.params.email;
     const deviceId = req.body.deviceId;
-    
+
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
-    let temp = merchant.userIdToNotify.filter((element)=> element != deviceId);
+    let temp = merchant.userIdToNotify.filter((element) => element != deviceId);
     console.log(temp);
-    if(temp.length != 0 || merchant.userIdToNotify.length == 0){
-        res.send({Message: "Device not exist!!"});
+    if (temp.length != 0 || merchant.userIdToNotify.length == 0) {
+        res.send({ Message: "Device not exist!!" });
         return;
     }
     merchant.userIdToNotify = temp;
     await merchant.save();
     console.log(merchant.userIdToNotify);
     // res.send(merchant.userIdToNotify);
-    res.send({Message: "Deactivate notifications"});
-    
+    res.send({ Message: "Deactivate notifications" });
+
 }
 
-const findUserDeviceIdFromList = async (req, res) =>{
+const findUserDeviceIdFromList = async (req, res) => {
     const email = req.params.email;
     const deviceId = req.body.deviceId;
-    
+
     // Find the merchant using the provided email
     let merchant = await Merchants.findOne({ email: email });
 
-    
-    let temp = merchant.userIdToNotify.filter((element)=> element == deviceId);
-    
-    if(temp.length != 0){
+
+    let temp = merchant.userIdToNotify.filter((element) => element == deviceId);
+
+    if (temp.length != 0) {
         console.log(true);
         res.send(true);
         return;
@@ -1843,11 +1847,159 @@ const findUserDeviceIdFromList = async (req, res) =>{
     console.log(false);
     res.send(false);
 
-    
-    
+
+
+}
+
+const transporter = nodemailer.createTransport({
+    service: "gmail",
+    // host: "smtp.gmail.com",
+    // port: 465,
+    // secure: true,
+    auth: {
+        user: "groupgroup060@gmail.com",
+        pass: "mbfrdirdtietclqu",
+    },
+    debug: true,  // Enable debug output
+    logger: true  // Log information in console
+});
+
+const customerForgotPassword = async (req, res) => {
+    const email = req.body.email;
+    console.log(email);
+    console.log(req.body);
+    const user = await users.findOne({ email: email });
+    console.log(user);
+
+    if (!user) {
+        return res.status(400).send('User with this email does not exist');
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `http://localhost:3000/customer-reset-password.html?token=${token}`;
+
+    const mailOptions = {
+        from: email,
+        to: email,
+        subject: 'Password Reset',
+        text: `You requested for a password reset, kindly use this link to reset your password: ${resetLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+
+        user.save();
+        res.send('Password reset link sent to your email account');
+    });
 }
 
 
+const customerResetPassword = async (req, res) => {
+
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        if (!token) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        const user = await users.findOne({
+            _id: decoded.id,
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found.' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ message: 'Password has been successfully reset' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+}
+
+const merchantForgotPassword = async (req, res) => {
+    const email = req.body.email;
+    console.log(email);
+    console.log(req.body);
+    const user = await Merchants.findOne({ email: email });
+    console.log(user);
+
+    if (!user) {
+        return res.status(400).send('User with this email does not exist');
+    }
+
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `http://localhost:3000/merchant-reset-password.html?token=${token}`;
+
+    const mailOptions = {
+        from: email,
+        to: email,
+        subject: 'Password Reset',
+        text: `You requested for a password reset, kindly use this link to reset your password: ${resetLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+
+        user.save();
+        res.send('Password reset link sent to your email account');
+    });
+}
+
+
+const merchantResetPassword = async (req, res) => {
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        if (!token) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        const user = await Merchants.findOne({
+            _id: decoded.id,
+        });
+
+        if (!user) {
+            return res.status(400).json({ message: 'User not found.' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        user.password = hashedPassword;
+        await user.save();
+
+        res.json({ message: 'Password has been successfully reset' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+}
+
+////////////////////////
 
 module.exports = {
     getAllUsers,
@@ -1925,7 +2077,12 @@ module.exports = {
     getDeviceIdList,
     sendCustomNotificationToDevice,
     deleteUserDeviceIdFromList,
-    findUserDeviceIdFromList
+    findUserDeviceIdFromList,
+    customerForgotPassword,
+    customerResetPassword,
+    merchantForgotPassword,
+    merchantResetPassword,
+
 
 
 }

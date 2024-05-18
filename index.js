@@ -43,7 +43,13 @@ app.use(rateLimiterMiddleware);
 
 
 
-app.use(cors())
+app.use(cors({
+    origin: 'http://localhost:3000', // or '*' to allow all origins
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true, // Allow cookies to be sent
+    allowedHeaders: 'Content-Type,Authorization'
+}));
+
 app.use(helmet());
 
 // app.use ( middleware )
@@ -53,16 +59,20 @@ app.use(router)
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views');
 
+app.use(express.static('public'));
+
 app.get("/test",(req,res)=>{
     res.send("Test Success tttttttttttttttttttttttttt");
 })
 
+
+
 app.use("/electrohub/api/v1/uploads", express.static(path.join("uploads")));
 
 
-app.use("*",(req,res,next)=>{
-    res.render("index")
-})
+// app.use("*",(req,res,next)=>{
+//     res.render("index")
+// })
 
 const server = http.createServer(app);
 const io = socketIo(server);

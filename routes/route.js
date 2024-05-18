@@ -177,8 +177,13 @@ router.delete("/matjarcom/api/v1/delete-user-device-id-from-list/:email", contro
 router.get("/matjarcom/api/v1/get-device-id-list/:email", controller.getDeviceIdList);
 router.post("/matjarcom/api/v1/find-user-device-id-from-list/:email", controller.findUserDeviceIdFromList);
 
-////////////////////////////////////////////////
-///////////////////////////////////////////////
+// Customer Forgot & Reset password 
+router.post('/matjarcom/api/v1/customer-forgot-password', controller.customerForgotPassword );
+router.post('/matjarcom/api/v1/customer-reset-password/:token', controller.customerResetPassword );
+
+// Merchant Forgot & Reset password 
+router.post('/matjarcom/api/v1/merchant-forgot-password', controller.merchantForgotPassword );
+router.post('/matjarcom/api/v1/merchant-reset-password/:token', controller.merchantResetPassword );
 
 // Other
 router.post("/matjarcom/api/v1/get-product-name-via-index/:email", controller.getProductNameViaIndex);
