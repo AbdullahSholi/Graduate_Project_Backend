@@ -70,9 +70,9 @@ app.get("/test",(req,res)=>{
 app.use("/electrohub/api/v1/uploads", express.static(path.join("uploads")));
 
 
-// app.use("*",(req,res,next)=>{
-//     res.render("index")
-// })
+app.use("*",(req,res,next)=>{
+    res.render("index")
+})
 
 const server = http.createServer(app);
 const io = socketIo(server);
