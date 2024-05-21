@@ -79,14 +79,6 @@ const io = socketIo(server);
 const connectedUser = new Set();
 
 
-// For render project
-const cronjob = require('node-cron');
-const ping = require('ping');
-
-cronjob.schedule('*/10 * * * *', () => {
-    ping.sys.probe("https://graduate-project-backend-1.onrender.com/");
-});
-////////////////////////////
 
 mongoose.connect(process.env.MONGO_URL).then(() => {
     console.log("Connected to DB Successfully!!");
