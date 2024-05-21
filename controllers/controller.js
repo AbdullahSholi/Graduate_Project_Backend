@@ -1879,8 +1879,8 @@ const customerForgotPassword = async (req, res) => {
     const resetLink = `http://localhost:3000/customer-reset-password.html?token=${token}`;
 
     const mailOptions = {
-        from: email,
-        to: email,
+        from: `Matjarcom Company ${email}`,
+        to: `Matjarcom Company ${email}`,
         subject: 'Password Reset',
         text: `You requested for a password reset, kindly use this link to reset your password: ${resetLink}`
     };
@@ -1947,8 +1947,8 @@ const merchantForgotPassword = async (req, res) => {
     const resetLink = `http://localhost:3000/merchant-reset-password.html?token=${token}`;
 
     const mailOptions = {
-        from: email,
-        to: email,
+        from: `Matjarcom Company ${email}`,
+        to: `Matjarcom Company ${email}`,
         subject: 'Password Reset',
         text: `You requested for a password reset, kindly use this link to reset your password: ${resetLink}`
     };
@@ -1999,7 +1999,25 @@ const merchantResetPassword = async (req, res) => {
     }
 }
 
-////////////////////////
+const getAllCustomers = async (req, res)=>{
+    const listOfUser = await users.find({});
+    console.log(listOfUser);
+    res.send(listOfUser);
+
+}
+
+const merchantProfileSecond = async (req, res) => {
+    try {
+        console.log(req.params.email)
+        const merchant = await Merchants.findOne({ email: req.params.email });
+        console.log(merchant);
+        res.status(200).send(merchant);
+    }
+    catch (err) {
+        res.status(500).send({ Message: err })
+    }
+
+}
 
 module.exports = {
     getAllUsers,
@@ -2082,6 +2100,8 @@ module.exports = {
     customerResetPassword,
     merchantForgotPassword,
     merchantResetPassword,
+    getAllCustomers,
+    merchantProfileSecond
 
 
 

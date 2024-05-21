@@ -83,6 +83,7 @@ router.delete("/matjarcom/api/v1/delete-product-from-favorite-list-from-differen
 router.get("/matjarcom/api/v1/customer-get-favorite-products-depend-on-category",controller.customerGetFavoriteProductsDependOnCategory)
 
 
+
 router.post("/matjarcom/api/v1/customer-add-to-cart-list/:email",authenticateToken,controller.customerAddToCartList)
 router.get("/matjarcom/api/v1/get-customer-cart-list/:email",authenticateToken,controller.getCustomerCartList)
 router.delete("/matjarcom/api/v1/delete-product-from-cart-list-from-different-stores/:email",controller.deleteProductFromCartListFromDifferentStores)
@@ -185,6 +186,12 @@ router.post('/matjarcom/api/v1/customer-reset-password/:token', controller.custo
 router.post('/matjarcom/api/v1/merchant-forgot-password', controller.merchantForgotPassword );
 router.post('/matjarcom/api/v1/merchant-reset-password/:token', controller.merchantResetPassword );
 
+
+// For Chat System
+router.get("/matjarcom/api/v1/get-all-customers",controller.getAllCustomers)
+
+
 // Other
 router.post("/matjarcom/api/v1/get-product-name-via-index/:email", controller.getProductNameViaIndex);
+router.get("/matjarcom/api/v1/merchant-profile-second/:email",controller.merchantProfileSecond);
 module.exports = router
