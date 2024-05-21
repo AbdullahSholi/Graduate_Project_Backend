@@ -41,6 +41,12 @@ const rateLimiter = new RateLimiterMemory({
 app.use(rateLimiterMiddleware);
 
 
+const cronjob = require('node-cron');
+const ping = require('ping');
+
+cronjob.schedule('*/10 * * * *', () => {
+    ping.sys.probe("https://graduate-project-backend-1.onrender.com");
+});
 
 
 app.use(cors({
