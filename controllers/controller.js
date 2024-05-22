@@ -1876,7 +1876,7 @@ const customerForgotPassword = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    const resetLink = `http://localhost:3000/customer-reset-password.html?token=${token}`;
+    const resetLink = `https://graduate-project-backend-1.onrender.com/customer-reset-password.html?token=${token}`;
 
     const mailOptions = {
         from: `Matjarcom Company ${email}`,
@@ -1944,7 +1944,7 @@ const merchantForgotPassword = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-    const resetLink = `http://localhost:3000/merchant-reset-password.html?token=${token}`;
+    const resetLink = `https://graduate-project-backend-1.onrender.com/merchant-reset-password.html?token=${token}`;
 
     const mailOptions = {
         from: `Matjarcom Company ${email}`,

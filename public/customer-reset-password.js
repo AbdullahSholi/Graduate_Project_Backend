@@ -11,7 +11,7 @@ document.getElementById('reset-button').addEventListener('click', async function
     }
 
     try {
-        const response = await fetch(`http://localhost:3000/matjarcom/api/v1/customer-reset-password/${token}`, {
+        const response = await fetch(`https://graduate-project-backend-1.onrender.com/matjarcom/api/v1/customer-reset-password/${token}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
