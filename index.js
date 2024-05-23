@@ -42,7 +42,7 @@ app.use(rateLimiterMiddleware);
 
 
 app.use(cors({
-    origin: 'http://localhost:3000', // or '*' to allow all origins
+    origin: "*", // or '*' to allow all origins
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true, // Allow cookies to be sent
     allowedHeaders: 'Content-Type,Authorization'
