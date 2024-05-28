@@ -20,11 +20,11 @@ const cartSchema = new mongoose.Schema({
     },
     cartLiked:{
         type:Boolean,
-        default:false,
+        default:true,
     },
     cartFavourite:{
         type:Boolean,
-        default:false,
+        default:true,
     },
     cartPrimaryImage:{
         type:String,

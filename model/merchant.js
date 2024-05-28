@@ -47,7 +47,7 @@ const merchantSchema = new mongoose.Schema({
     
     storeAvatar:{
         type: String,
-        default: "http://res.cloudinary.com/dsuaio9tv/image/upload/v1708109280/blctf7fxgqai2t8p2lck.png",
+        default: "https://res.cloudinary.com/dsuaio9tv/image/upload/v1716922097/ob8f4czlbbsy7dwu7t70.jpg",
     },
     storeCategory:{
         required: true,
