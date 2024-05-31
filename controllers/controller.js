@@ -1000,7 +1000,7 @@ const merchantAddStoreToDatabase = async (req, res) => {
     try {
         const emailParams = req.params.email
         // Extract necessary information from the request body
-        const { merchantname, email, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, activateSlider, activateCategory, activateCarts, specificStoreCategories, type } = req.body.stores;
+        const { merchantname, email, phone, country, Avatar, storeName, storeAvatar, storeCategory, storeSliderImages, storeProductImages, storeDescription, storeSocialMediaAccounts, activateSlider, activateCategory, activateCarts, specificStoreCategories, type, backgroundColor, boxesColor, primaryTextColor, secondaryTextColor, clippingColor, smoothy, design } = req.body.stores;
         //    console.log(req.body.stores)
         console.log("--------------------------")
         console.log("--------------------------")
@@ -1055,6 +1055,13 @@ const merchantAddStoreToDatabase = async (req, res) => {
                             foundObject.activateCategory = activateCategory;
                             foundObject.activateCarts = activateCarts;
                             foundObject.specificStoreCategories = specificStoreCategories,
+                            foundObject.backgroundColor = backgroundColor,
+                            foundObject.boxesColor = boxesColor,
+                            foundObject.primaryTextColor = primaryTextColor,
+                            foundObject.secondaryTextColor = secondaryTextColor,
+                            foundObject.clippingColor = clippingColor,
+                            foundObject.smoothy = smoothy,
+                            foundObject.design = design,
                                 // foundObject.type = type,
                                 console.log("---------==")
                             console.log(foundObject)
@@ -1103,6 +1110,13 @@ const merchantAddStoreToDatabase = async (req, res) => {
                     activateCategory: activateCategory,
                     activateCarts: activateCarts,
                     specificStoreCategories: specificStoreCategories,
+                    backgroundColor : backgroundColor,
+                    boxesColor : boxesColor,
+                    primaryTextColor : primaryTextColor,
+                    secondaryTextColor : secondaryTextColor,
+                    clippingColor : clippingColor,
+                    smoothy : smoothy,
+                    design : design,
                     // type: type,
                 }
             );

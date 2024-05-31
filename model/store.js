@@ -20,6 +20,13 @@ const storeSchema = new mongoose.Schema({
         activateCategory: Boolean,
         specificStoreCategories:[String],
         activateCarts: Boolean,
+        backgroundColor: String,
+        boxesColor: String,
+        primaryTextColor: String,
+        secondaryTextColor: String,
+        clippingColor: String,
+        smoothy: String,
+        design: String
         // type: [String],
         
         
