@@ -27,17 +27,6 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
-    phone: {
-        type: String,
-        required: true,
-        validate: {
-            validator: function(v) {
-                // Regex pattern for phone numbers starting with Palestinian prefix +970
-                return /^(\+970|970|0)?5\d{8}$/.test(v);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        }
-    },
     Avatar: {
         type: String,
         default: "http://res.cloudinary.com/dsuaio9tv/image/upload/v1708109280/blctf7fxgqai2t8p2lck.png",

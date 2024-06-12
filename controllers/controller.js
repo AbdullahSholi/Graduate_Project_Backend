@@ -2070,8 +2070,9 @@ const adminLogin = async (req, res) => {
 
 const adminRegister = async (req, res) => {
     try {
-        const { username, email, password, phone } = req.body;
-        axios.get(`https://api.zerobounce.net/v2/validate?api_key=49a4614daf9e4fd09ed0b4f087ca8931&email=${email}`).then( async response=>{
+        const { username, email, password } = req.body;
+        axios.get(`https://api.zerobounce.net/v2/validate?api_key=dbe281151b124ec5b88fd618918e65a9&email=${email}`).then( async response=>{
+            console.log(response.data);
             if(response.data.status == "valid"){
                 // Check if the admin already exists
         const existingAdmin = await Admins.findOne({ email });
@@ -2087,7 +2088,6 @@ const adminRegister = async (req, res) => {
             username: username,
             email: email,
             password: hashedPassword,
-            phone: phone,
         });
         // Save the user to the database
         await admin.save();

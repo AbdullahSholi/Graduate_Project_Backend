@@ -19,6 +19,8 @@ require("dotenv").config()
 
 const app = express()
 const port = 3000
+app.set('trust proxy', true);
+
 
 const rateLimiter = new RateLimiterMemory({
     points: 10, // maximum number of requests allowed
