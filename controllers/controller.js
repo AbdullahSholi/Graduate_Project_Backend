@@ -19,6 +19,9 @@ const Merchants = require("../model/merchant")
 const Carts = require("../model/cart")
 const Store = require("../model/store")
 const IndexModel = require("../model/storeIndex")
+
+const Admins = require("../model/admins")
+const axios = require("axios");
 const { sendNotification, sendNotificationToDevice, sendCustomNotificationToDevice } = require("../config/send-notificat")
 app.use(cors())
 
@@ -2033,6 +2036,148 @@ const merchantProfileSecond = async (req, res) => {
 
 }
 
+//////////////////////////////////////////
+// Admin Dashboard
+const adminLogin = async (req, res) => {
+    try {
+        const { email, password } = req.body;
+        console.log(req.body);
+
+        // Find the admin by email
+        const admin = await Admins.findOne({ email });
+        if (!admin) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+        // Verify the password
+        const passwordMatch = await bcrypt.compare(password, admin.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ message: 'Invalid email or password' });
+        }
+
+
+
+        // Generate JWT token
+        const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
+
+        // Send the token in the response
+        res.json({ email: email, token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
+const adminRegister = async (req, res) => {
+    try {
+        const { username, email, password, phone } = req.body;
+        axios.get(`https://api.zerobounce.net/v2/validate?api_key=49a4614daf9e4fd09ed0b4f087ca8931&email=${email}`).then( async response=>{
+            if(response.data.status == "valid"){
+                // Check if the admin already exists
+        const existingAdmin = await Admins.findOne({ email });
+
+        if (existingAdmin) {
+            return res.status(400).json({ message: 'Email already registered' });
+        }
+
+        // Hash the password before saving it to the database
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // Create a new user
+        const admin = new Admins({
+            username: username,
+            email: email,
+            password: hashedPassword,
+            phone: phone,
+        });
+        // Save the user to the database
+        await admin.save();
+
+        // Generate JWT token
+        const token = jwt.sign(req.body, process.env.JWT_SECRET, { expiresIn: "1y" });
+        console.log(token)
+        // Send the token in the response
+        res.status(201).send({ email: email, token: token });
+            } else{
+                res.status(403).send({status: "failed", message: "Invalid Email!"})
+            }
+
+        
+        }).catch(error=>{
+            res.status(401).send({status: "failed", message: error})
+        })
+        
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: error.message });
+    }
+}
+
+const adminForgotPassword = async (req, res)=>{
+    const email = req.body.email;
+    console.log(email);
+    console.log(req.body);
+    const admin = await Admins.findOne({ email: email });
+    console.log(admin);
+
+    if (!admin) {
+        return res.status(400).send('Admin with this email does not exist');
+    }
+
+    const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const resetLink = `https://graduate-project-backend-1.onrender.com/admin-reset-password.html?token=${token}`;
+
+    const mailOptions = {
+        from: `Matjarcom Company ${email}`,
+        to: `Matjarcom Company ${email}`,
+        subject: 'Password Reset',
+        text: `You requested for a password reset, kindly use this link to reset your password: ${resetLink}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+
+        admin.save();
+        res.send('Password reset link sent to your email account');
+    });
+}
+
+const adminResetPassword = async (req, res)=>{
+    try {
+        const { token } = req.params;
+        const { password } = req.body;
+
+        if (!token) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(400).send('Invalid or expired token');
+        }
+
+        const admin = await Admins.findOne({
+            _id: decoded.id,
+        });
+
+        if (!admin) {
+            return res.status(400).json({ message: 'Admin not found.' });
+        }
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        admin.password = hashedPassword;
+        await admin.save();
+
+        res.json({ message: 'Password has been successfully reset' });
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2115,7 +2260,12 @@ module.exports = {
     merchantForgotPassword,
     merchantResetPassword,
     getAllCustomers,
-    merchantProfileSecond
+    merchantProfileSecond,
+    // Admin
+    adminLogin,
+    adminRegister,
+    adminForgotPassword,
+    adminResetPassword
 
 
 

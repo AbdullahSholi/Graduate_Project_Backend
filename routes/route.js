@@ -194,4 +194,14 @@ router.get("/matjarcom/api/v1/get-all-customers",controller.getAllCustomers)
 // Other
 router.post("/matjarcom/api/v1/get-product-name-via-index/:email", controller.getProductNameViaIndex);
 router.get("/matjarcom/api/v1/merchant-profile-second/:email",controller.merchantProfileSecond);
+////////////////////////////////////////////////////////////////////
+
+// Admin Dashboard
+router.post("/matjarcom/api/v1/admin-login",loginLimiter, controller.adminLogin)
+router.post("/matjarcom/api/v1/admin-register",controller.adminRegister)
+router.post('/matjarcom/api/v1/admin-forgot-password', controller.adminForgotPassword );
+router.post('/matjarcom/api/v1/admin-reset-password/:token', controller.adminResetPassword );
+
+
+
 module.exports = router
