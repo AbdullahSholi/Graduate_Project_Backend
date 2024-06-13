@@ -2290,11 +2290,18 @@ const deleteCategory = async(req, res)=>{
 }
 
 const displayStoresForEachCategory = async(req, res)=>{
-    const email = req.params.email;
-    const storeCategory = req.body.storeCategory;
+    // const email = req.params.storeCategory;
+    const storeCategory = req.params.storeCategory;
     const stores = await Store.find();
     var tempStores = stores[0].stores.filter(element => element.storeCategory == storeCategory)
     res.send(tempStores)
+}
+const displayNumberOfStoresForEachCategory = async(req, res)=>{
+
+    const storeCategory = req.params.storeCategory;
+    const stores = await Store.find();
+    var tempStores = stores[0].stores.filter(element => element.storeCategory == storeCategory)
+    res.send(tempStores.length)
 }
 
 const addPercentageForEachTransaction = async(req, res)=>{
@@ -2414,6 +2421,7 @@ module.exports = {
     deleteMerchantStore,
     deleteMerchant,
     displayStoresCategories,
+    displayNumberOfStoresForEachCategory,
     addNewCategory,
     deleteCategory,
     displayStoresForEachCategory,
