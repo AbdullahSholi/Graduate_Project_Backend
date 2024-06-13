@@ -2301,7 +2301,7 @@ const displayNumberOfStoresForEachCategory = async(req, res)=>{
     const storeCategory = req.params.storeCategory;
     const stores = await Store.find();
     var tempStores = stores[0].stores.filter(element => element.storeCategory == storeCategory)
-    res.send(tempStores.length)
+    res.send({length: tempStores.length})
 }
 
 const addPercentageForEachTransaction = async(req, res)=>{
