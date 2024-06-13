@@ -216,6 +216,9 @@ router.get('/matjarcom/api/v1/display-number-of-stores-for-each-category/:storeC
 router.post('/matjarcom/api/v1/add-percentage-for-each-transaction/:email', controller.addPercentageForEachTransaction );
 router.get('/matjarcom/api/v1/display-most-popular-stores/:email', controller.displayMostPopularStores );
 
+router.post('/matjarcom/api/v1/create-task/:email', controller.createTask );
+router.get('/matjarcom/api/v1/tasks/:email', controller.getTasks );
+router.delete('/matjarcom/api/v1/task/:email', controller.deleteTask );
 
 
 

@@ -2327,6 +2327,33 @@ const displayMostPopularStores = async(req, res)=>{
     
 }
 
+const createTask = async(req, res)=>{
+    const email = req.params.email;
+    const {content, clock} = req.body;
+    const admin = await Admins.findOne({email: email});
+
+    admin.tasks.push({content: content, clock: clock});
+    await admin.save();
+    res.send({message: "Create tasks successfully!!"})
+}   
+
+const getTasks = async(req, res)=>{
+    const email = req.params.email;
+    const admin = await Admins.findOne({email: email});
+
+    res.send({result: admin.tasks})
+}
+
+const deleteTask = async(req, res)=>{
+    const email = req.params.email;
+    const index = req.body.index;
+    const admin = await Admins.findOne({email: email});
+    console.log(admin.tasks);
+    admin.tasks.splice(index, 1);
+    await admin.save();
+    res.send({result: admin.tasks})
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2426,7 +2453,10 @@ module.exports = {
     deleteCategory,
     displayStoresForEachCategory,
     addPercentageForEachTransaction,
-    displayMostPopularStores
+    displayMostPopularStores,
+    createTask,
+    getTasks,
+    deleteTask
 
 
 

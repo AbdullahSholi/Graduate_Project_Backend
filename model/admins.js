@@ -38,6 +38,10 @@ const adminSchema = new mongoose.Schema({
     eachTransactionPercentage:{
         type: Number,
         default: 2.5
+    },
+    tasks:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
     }
 
 });
