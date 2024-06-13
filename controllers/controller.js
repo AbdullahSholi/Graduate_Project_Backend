@@ -2241,7 +2241,7 @@ const deleteMerchant = async(req, res)=>{
 
 const displayStoresCategories = async(req, res)=>{
     const email = req.params.email;
-    const admin = Admins.find({});
+    const admin = await Admins.find({});
     res.send({result:admin.allCategories});
 }
 const addNewCategory = async(req, res)=>{
