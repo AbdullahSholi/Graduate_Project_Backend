@@ -2313,7 +2313,7 @@ const addPercentageForEachTransaction = async(req, res)=>{
     admin.eachTransactionPercentage = percentage;
     await admin.save();
     // Respond with the updated allCategories array
-    res.status(200).json({ result: admin.percentage });
+    res.status(200).json({ result: admin.eachTransactionPercentage });
     
 }
 const displayMostPopularStores = async(req, res)=>{
