@@ -2120,7 +2120,7 @@ const adminForgotPassword = async (req, res)=>{
     console.log(admin);
 
     if (!admin) {
-        return res.status(400).send('Admin with this email does not exist');
+        return res.status(400).send({Message: 'Admin with this email does not exist'});
     }
 
     const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
@@ -2139,7 +2139,7 @@ const adminForgotPassword = async (req, res)=>{
         }
 
         admin.save();
-        res.send('Password reset link sent to your email account');
+        res.send({Message: 'Password reset link sent to your email account'});
     });
 }
 
