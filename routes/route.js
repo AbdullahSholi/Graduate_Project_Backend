@@ -211,8 +211,8 @@ router.delete('/matjarcom/api/v1/delete-merchant/:email', controller.deleteMerch
 router.get('/matjarcom/api/v1/display-stores-categories/:email', controller.displayStoresCategories );
 router.post('/matjarcom/api/v1/add-new-category/:email', controller.addNewCategory );
 router.delete('/matjarcom/api/v1/delete-category/:email', controller.deleteCategory );
-router.get('/matjarcom/api/v1/display-stores-for-each-category/:email', controller.displayStoresForEachCategory );
-router.get('/matjarcom/api/v1/display-number-of-stores-for-each-category/:email', controller.displayNumberOfStoresForEachCategory );
+router.get('/matjarcom/api/v1/display-stores-for-each-category/:storeCategory', controller.displayStoresForEachCategory );
+router.get('/matjarcom/api/v1/display-number-of-stores-for-each-category/:storeCategory', controller.displayNumberOfStoresForEachCategory );
 router.post('/matjarcom/api/v1/add-percentage-for-each-transaction/:email', controller.addPercentageForEachTransaction );
 router.get('/matjarcom/api/v1/display-most-popular-stores/:email', controller.displayMostPopularStores );
 
