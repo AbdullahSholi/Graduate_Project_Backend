@@ -202,6 +202,8 @@ router.post("/matjarcom/api/v1/admin-register",controller.adminRegister)
 router.post('/matjarcom/api/v1/admin-forgot-password', controller.adminForgotPassword );
 router.post('/matjarcom/api/v1/admin-reset-password/:token', controller.adminResetPassword );
 
+router.get('/matjarcom/api/v1/admin-data/:email', controller.adminData );
+
 
 router.get('/matjarcom/api/v1/display-all-merchants/:email', controller.displayAllMerchants );
 router.get('/matjarcom/api/v1/display-all-stores/:email', controller.displayAllStores );

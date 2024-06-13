@@ -2178,6 +2178,12 @@ const adminResetPassword = async (req, res)=>{
     }
 }
 
+const adminData = async(req, res)=>{
+    const email = req.params.email;
+    const admin = await Admins.findOne({email: email});
+    res.send(admin);
+}
+
 
 
 const displayAllMerchants = async(req, res)=>{
@@ -2442,6 +2448,9 @@ module.exports = {
     adminRegister,
     adminForgotPassword,
     adminResetPassword,
+    adminData,
+
+
     displayAllMerchants,
     displayAllStores,
     displayYourWealth,
