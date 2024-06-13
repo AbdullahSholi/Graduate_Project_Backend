@@ -30,7 +30,16 @@ const adminSchema = new mongoose.Schema({
     Avatar: {
         type: String,
         default: "http://res.cloudinary.com/dsuaio9tv/image/upload/v1708109280/blctf7fxgqai2t8p2lck.png",
+    },
+    allCategories: {
+        type: [String],
+        default:["All Stores"]
+    },
+    eachTransactionPercentage:{
+        type: Number,
+        default: 2.5
     }
+
 });
 
 const Admins = mongoose.model('Admins', adminSchema);

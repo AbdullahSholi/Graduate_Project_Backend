@@ -203,5 +203,20 @@ router.post('/matjarcom/api/v1/admin-forgot-password', controller.adminForgotPas
 router.post('/matjarcom/api/v1/admin-reset-password/:token', controller.adminResetPassword );
 
 
+router.get('/matjarcom/api/v1/display-all-merchants/:email', controller.displayAllMerchants );
+router.get('/matjarcom/api/v1/display-all-stores/:email', controller.displayAllStores );
+router.get('/matjarcom/api/v1/display-your-wealth/:email', controller.displayYourWealth );
+router.delete('/matjarcom/api/v1/delete-merchant-store/:email', controller.deleteMerchantStore );
+router.delete('/matjarcom/api/v1/delete-merchant/:email', controller.deleteMerchant );
+router.get('/matjarcom/api/v1/display-stores-categories/:email', controller.displayStoresCategories );
+router.post('/matjarcom/api/v1/add-new-category/:email', controller.addNewCategory );
+router.delete('/matjarcom/api/v1/delete-category/:email', controller.deleteCategory );
+router.get('/matjarcom/api/v1/display-stores-for-each-category/:email', controller.displayStoresForEachCategory );
+router.post('/matjarcom/api/v1/add-percentage-for-each-transaction/:email', controller.addPercentageForEachTransaction );
+router.get('/matjarcom/api/v1/display-most-popular-stores/:email', controller.displayMostPopularStores );
+
+
+
+
 
 module.exports = router

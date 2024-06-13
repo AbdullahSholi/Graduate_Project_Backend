@@ -2178,6 +2178,148 @@ const adminResetPassword = async (req, res)=>{
     }
 }
 
+
+
+const displayAllMerchants = async(req, res)=>{
+    const email = req.params.email;
+    const merchants = await Merchants.find({ email: { $exists: true }, merchantname: { $exists: true }, phone: { $exists: true }, country: { $exists: true }, Avatar: { $exists: true }, storeName: { $exists: true }, storeCategory: { $exists: true } }).select('email merchantname phone country Avatar storeName storeCategory')
+    .exec();
+    res.status(200).send({result: merchants});
+}
+const displayAllStores = async(req, res)=>{
+    const email = req.params.email;
+    const result = await Store.aggregate([
+        { $unwind: '$stores' }, // Unwind the stores array
+        {
+            $project: {
+                merchantname: '$stores.merchantname',
+                email: '$stores.email',
+                phone: '$stores.phone',
+                country: '$stores.country',
+                Avatar: '$stores.Avatar',
+                storeName: '$stores.storeName',
+                storeCategory: '$stores.storeCategory'
+            }
+        }
+    ]);
+    res.status(200).send({result: result});
+}
+const displayYourWealth = async(req, res)=>{
+
+}
+const deleteMerchantStore = async(req, res)=>{
+    const email = req.body.email;
+    // Find the document where the 'stores' array contains the store with the matching 'email'
+    const updatedDocument = await Store.findOneAndUpdate(
+        { 'stores.email': email }, // Match document where 'stores' array contains email
+        {
+            $pull: {
+                stores: { email: email }
+            }
+        },
+        { new: true }
+    );
+
+    if (!updatedDocument) {
+        return res.status(404).json({ error: 'Document not found or store not found' });
+    }
+
+    res.status(200).json({ message: 'Store deleted successfully', result: updatedDocument });
+}
+
+const deleteMerchant = async(req, res)=>{
+    const email = req.body.email;
+    // Find the document where the 'stores' array contains the store with the matching 'email'
+    const deleteMerchant = await Merchants.deleteOne({email:req.body.email});
+
+    if (!deleteMerchant) {
+        return res.status(404).json({ error: 'document not found or merchant not found' });
+    }
+
+    res.status(200).json({ message: 'merchant deleted successfully', result: deleteMerchant });
+}
+
+const displayStoresCategories = async(req, res)=>{
+    const email = req.params.email;
+    const admin = Admins.find({});
+    res.send({result:admin.allCategories});
+}
+const addNewCategory = async(req, res)=>{
+    const email = req.params.email;
+    const storeCategory = req.body.storeCategory;
+    console.log(storeCategory);
+    const admin = await Admins.findOne({});
+    console.log(admin);
+
+    if (!admin) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+    
+    console.log(admin);
+    const result = admin.allCategories.filter(category=>category == storeCategory);
+    console.log(result);
+    if(result.length==0){
+        admin.allCategories.push(storeCategory);
+        await admin.save();
+        // Respond with the updated allCategories array
+        res.status(200).json({ result: admin.allCategories });
+    } else{
+        res.status(200).json({ message: "Category already exist!" });
+    }
+    
+
+}
+const deleteCategory = async(req, res)=>{
+
+    const email = req.params.email;
+    const storeCategory = req.body.storeCategory;
+    console.log(storeCategory);
+    const admin = await Admins.findOne({});
+    console.log(admin);
+    if (!admin) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+    
+    console.log(admin);
+    admin.allCategories = admin.allCategories.filter(category=>category != storeCategory);
+    await admin.save();
+        // Respond with the updated allCategories array
+    res.status(200).json({ result: admin.allCategories });
+
+
+}
+
+const displayStoresForEachCategory = async(req, res)=>{
+    const email = req.params.email;
+    const storeCategory = req.body.storeCategory;
+    const stores = await Store.find();
+    var tempStores = stores[0].stores.filter(element => element.storeCategory == storeCategory)
+    res.send(tempStores)
+}
+
+const addPercentageForEachTransaction = async(req, res)=>{
+    const email = req.params.email;
+    const percentage = req.body.percentage;
+    console.log(percentage);
+    const admin = await Admins.findOne({});
+    console.log(admin);
+
+    if (!admin) {
+        return res.status(404).json({ error: 'Admin not found' });
+    }
+    
+    console.log(admin);
+    
+    admin.eachTransactionPercentage = percentage;
+    await admin.save();
+    // Respond with the updated allCategories array
+    res.status(200).json({ result: admin.percentage });
+    
+}
+const displayMostPopularStores = async(req, res)=>{
+    
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2265,7 +2407,18 @@ module.exports = {
     adminLogin,
     adminRegister,
     adminForgotPassword,
-    adminResetPassword
+    adminResetPassword,
+    displayAllMerchants,
+    displayAllStores,
+    displayYourWealth,
+    deleteMerchantStore,
+    deleteMerchant,
+    displayStoresCategories,
+    addNewCategory,
+    deleteCategory,
+    displayStoresForEachCategory,
+    addPercentageForEachTransaction,
+    displayMostPopularStores
 
 
 
