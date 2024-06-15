@@ -222,6 +222,10 @@ router.post('/matjarcom/api/v1/create-task/:email', controller.createTask );
 router.get('/matjarcom/api/v1/tasks/:email', controller.getTasks );
 router.delete('/matjarcom/api/v1/task/:email', controller.deleteTask );
 
+router.post('/matjarcom/api/v1/send-email-to-admin/:email', controller.sendEmailToAdmin );
+
+
+
 
 
 

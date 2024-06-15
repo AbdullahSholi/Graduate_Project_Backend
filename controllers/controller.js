@@ -2360,6 +2360,36 @@ const deleteTask = async(req, res)=>{
     res.send({result: admin.tasks})
 }
 
+const sendEmailToAdmin = async(req, res)=>{
+    const email = req.params.email;
+    const customerEmail = req.body.email;
+    const subject = req.body.subject;
+    const content = req.body.content;
+
+    const admin = await Admins.findOne({ email: email });
+    console.log(admin);
+
+    if (!admin) {
+        return res.status(400).send('Admin with this email does not exist');
+    }
+
+    const mailOptions = {
+        from: `User ${customerEmail}`,
+        to: `Admin ${email}`,
+        subject: `${subject}`,
+        text: `Sent by ${customerEmail} 
+        
+        Content: ${content}`
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return res.status(500).send(error.toString());
+        }
+        res.send('Your email sent to admin successfully!!');
+    });
+}
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2465,7 +2495,8 @@ module.exports = {
     displayMostPopularStores,
     createTask,
     getTasks,
-    deleteTask
+    deleteTask,
+    sendEmailToAdmin
 
 
 
