@@ -2416,7 +2416,8 @@ const decreaseQuantityPartTwo = async (req, res)=>{
     console.log("-------------------");
     
     // console.log(req.body.data);
-    let data = req.body.data.result;
+    // let data = req.body.data.result;// production
+    let data = req.body.data; // test
 
     
     for(let i=0; i<data.length; i++){
@@ -2430,7 +2431,39 @@ const decreaseQuantityPartTwo = async (req, res)=>{
     }
 
     
-    res.send({Message:"Success"});
+
+    for (let i = 0; i < data.length; i++) {
+        try {
+            const user = await Users.findOne({ email: req.params.email }).populate("favouriteList");
+    
+            for (let j = 0; j < user.favouriteList.length; j++) {
+                if (user.favouriteList[j].cartName == data[i].cartName && user.favouriteList[j].merchant == data[i].merchant) {
+                    const temporal = user.favouriteList[j].cartQuantities - data[i].quantities;
+    
+                    await Users.findOneAndUpdate(
+                        { email: req.params.email }, // Match user by email
+                        { $set: { [`favouriteList.${j}.cartQuantities`]: temporal } }, // Update only the cartQuantities field
+                        { new: true } // To return the updated document
+                    )
+                    .then(updatedUser => {
+                        if (updatedUser) {
+                            console.log('Updated user:', updatedUser);
+                        } else {
+                            console.log('User not found');
+                        }
+                    })
+                    .catch(error => {
+                        console.error(`Error updating user: ${error}`);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error(`Error processing item ${i}: ${error}`);
+        }
+    }
+    
+    res.send({Message: "Success"});
+    
 }
 
 
