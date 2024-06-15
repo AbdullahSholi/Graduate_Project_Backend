@@ -2416,8 +2416,8 @@ const decreaseQuantityPartTwo = async (req, res)=>{
     console.log("-------------------");
     
     // console.log(req.body.data);
-    // let data = req.body.data.result;// production
-    let data = req.body.data; // test
+    let data = req.body.data.result;// production
+    // let data = req.body.data; // test
 
     
     for(let i=0; i<data.length; i++){
@@ -2432,7 +2432,7 @@ const decreaseQuantityPartTwo = async (req, res)=>{
 
     
 
-    
+
 
     for (let i = 0; i < data.length; i++) {
         try {
