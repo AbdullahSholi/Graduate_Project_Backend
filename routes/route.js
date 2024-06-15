@@ -225,6 +225,11 @@ router.delete('/matjarcom/api/v1/task/:email', controller.deleteTask );
 router.post('/matjarcom/api/v1/send-email-to-admin/:email', controller.sendEmailToAdmin );
 
 
+// Decrease Quantity Endpoint
+router.get('/matjarcom/api/v1/decrease-quantity-part-one/:email', controller.decreaseQuantityPartOne);
+router.post('/matjarcom/api/v1/decrease-quantity-part-two/:email', controller.decreaseQuantityPartTwo);
+
+
 
 
 

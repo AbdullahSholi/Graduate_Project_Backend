@@ -2390,6 +2390,50 @@ const sendEmailToAdmin = async(req, res)=>{
     });
 }
 
+
+const decreaseQuantityPartOne = async (req, res)=>{
+    
+    const customerEmail = req.params.email;
+
+    const user = await Users.findOne({email: customerEmail});
+    console.log(user.cartList); 
+
+    let temp = [];
+    
+    for(let i=0; i<user.cartList.length; i++){
+        temp.push({cartName: user.cartList[i].cartName, merchant: user.cartList[i].merchant, quantities: user.cartList[i].quantities});
+    }
+
+    console.log(temp);
+    
+
+    res.send({result: temp});
+}
+
+
+const decreaseQuantityPartTwo = async (req, res)=>{
+
+    console.log("-------------------");
+    
+    // console.log(req.body.data);
+    let data = req.body.data.result;
+
+    
+    for(let i=0; i<data.length; i++){
+        const merchant = await Merchants.findOne({_id: data[i].merchant }).populate("type");
+        const temp = merchant.type.filter(element=> element.cartName == data[i].cartName );
+        temp[0].cartQuantities = temp[0].cartQuantities - data[i].quantities;
+        // console.log(temp[0].cartQuantities);
+        await temp[0].save();
+        await merchant.save();
+        
+    }
+
+    
+    res.send({Message:"Success"});
+}
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2496,7 +2540,9 @@ module.exports = {
     createTask,
     getTasks,
     deleteTask,
-    sendEmailToAdmin
+    sendEmailToAdmin,
+    decreaseQuantityPartOne,
+    decreaseQuantityPartTwo
 
 
 
