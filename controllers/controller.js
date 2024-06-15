@@ -2432,6 +2432,8 @@ const decreaseQuantityPartTwo = async (req, res)=>{
 
     
 
+    
+
     for (let i = 0; i < data.length; i++) {
         try {
             const user = await Users.findOne({ email: req.params.email }).populate("favouriteList");
