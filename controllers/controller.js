@@ -624,7 +624,7 @@ const testSpecificCart = async (req, res) => {
     try {
         const email = req.params.email
         // Extract necessary information from the request body
-        const { cartPrimaryImage, cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite, cartQuantities } = req.body;
+        const { cartPrimaryImage, cartName, cartPrice, cartDiscount, cartLiked, cartPriceAfterDiscount, cartSecondaryImagesSlider, cartDescription, cartCategory, cartFavourite, cartQuantities, discountValue } = req.body;
 
         // Find the merchant using the provided email
         const merchant = await Merchants.findOne({ email: email });
@@ -647,6 +647,7 @@ const testSpecificCart = async (req, res) => {
             cartCategory,
             cartFavourite,
             cartQuantities,
+            discountValue,
             merchant: merchant._id, // Associate the cart with the merchant
         });
 
