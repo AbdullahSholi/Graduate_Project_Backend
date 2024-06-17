@@ -234,6 +234,11 @@ router.post('/matjarcom/api/v1/decrease-quantity-part-two/:email', controller.de
 router.post('/matjarcom/api/v1/statistics-increase-number-of-customer-category/:email', controller.statisticsIncreaseNumberOfCustomerCategory);
 router.post('/matjarcom/api/v1/get-statistics-about-category/:email', controller.getStatisticsAboutCategory);
 
+// Total revenue 
+router.post('/matjarcom/api/v1/statistics-add-to-revenue/:merchant', controller.statisticsAddToRevenue);
+
+
+
 
 
 

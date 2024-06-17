@@ -2550,6 +2550,42 @@ const getStatisticsAboutCategory = async (req, res) =>{
 
 
 
+const statisticsAddToRevenue = async (req, res) => {
+    try {
+
+        const id = req.params.merchant;
+        const month = req.body.month;
+        const revenue = req.body.revenue;
+
+        const merchant = await Merchants.findOne({_id: id});
+
+        console.log(merchant);
+        
+        const temp = merchant.totalProfit.filter(element => element.month == month);
+        
+        if(temp.length == 0){
+            merchant.totalProfit.push({month: month, revenue: revenue});
+            merchant.markModified('totalProfit');
+        } else{
+            merchant.totalProfit.forEach(element => {
+                if(element.month == month){
+                    element.revenue += revenue;
+                }
+            });
+            merchant.markModified('totalProfit');
+        }
+        await merchant.save();
+
+
+      res.status(200).send({result: merchant.totalProfit});
+    } catch (error) {
+      console.error("Error fetching statistics:", error);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  };
+  
+  
+  
 
 module.exports = {
     getAllUsers,
@@ -2663,7 +2699,9 @@ module.exports = {
 
     // statistics
     statisticsIncreaseNumberOfCustomerCategory,
-    getStatisticsAboutCategory
+    getStatisticsAboutCategory,
+
+    statisticsAddToRevenue
 
 
 

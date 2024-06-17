@@ -131,6 +131,10 @@ const merchantSchema = new mongoose.Schema({
         type: [mongoose.Schema.Types.Mixed],
         default: []
     },
+    totalProfit:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    }
     
 
 });
