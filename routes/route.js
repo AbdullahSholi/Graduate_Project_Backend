@@ -230,6 +230,11 @@ router.get('/matjarcom/api/v1/decrease-quantity-part-one/:email', controller.dec
 router.post('/matjarcom/api/v1/decrease-quantity-part-two/:email', controller.decreaseQuantityPartTwo);
 
 
+// Statistics
+router.post('/matjarcom/api/v1/statistics-increase-number-of-customer-category/:email', controller.statisticsIncreaseNumberOfCustomerCategory);
+router.post('/matjarcom/api/v1/get-statistics-about-category/:email', controller.getStatisticsAboutCategory);
+
+
 
 
 

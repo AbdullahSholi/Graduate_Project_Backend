@@ -1,6 +1,19 @@
 const mongoose = require("mongoose")
 
 
+const ForMostCategorySchema = new mongoose.Schema({
+    cartCategory: {
+        type: String,
+        required: true
+    },
+    forMostViewed: {
+        type: Number,
+        required: true
+    }
+});
+
+const ForMostCategory = mongoose.model('ForMostCategory', ForMostCategorySchema);
+
 // User schema and model
 const merchantSchema = new mongoose.Schema({
     merchantname: {
@@ -113,7 +126,11 @@ const merchantSchema = new mongoose.Schema({
     userIdToNotify:{
         type: [mongoose.Schema.Types.Mixed],
         default: []
-    }
+    },
+    forMostCategory:{
+        type: [mongoose.Schema.Types.Mixed],
+        default: []
+    },
     
 
 });

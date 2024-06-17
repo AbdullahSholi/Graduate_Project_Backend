@@ -2473,6 +2473,84 @@ const decreaseQuantityPartTwo = async (req, res)=>{
 }
 
 
+const statisticsIncreaseNumberOfCustomerCategory = async (req, res) => {
+    try {
+
+        const email = req.params.email;
+        const cartCategory = req.body.cartCategory;
+        let numbers = req.body.forMostViewed;
+        // Find the merchant by email
+        const merchant = await Merchants.findOne({ email: email });
+        
+        if (!merchant) {
+            throw new Error("Merchant not found");
+        }
+
+        // Check if forMostCategory is not an array, initialize it
+        if (!Array.isArray(merchant.forMostCategory)) {
+            merchant.forMostCategory = [{forMostViewed: 0}];
+        }
+
+        let categoryFound = false;
+
+        // Find index of the category in forMostCategory array
+        const index = merchant.forMostCategory.findIndex(element => element.cartCategory === cartCategory);
+
+        if (index !== -1) {
+            // Category found, update the number directly
+            merchant.forMostCategory[index].forMostViewed = numbers;
+            merchant.markModified('forMostCategory');
+            
+        } else {
+            // Category not found, push new object
+            merchant.forMostCategory.push({ cartCategory: cartCategory, forMostViewed: numbers });
+            merchant.markModified('forMostCategory');
+        }
+
+        // Save the updated merchant object
+        await merchant.save();
+
+        console.log("After save:", merchant); // Log the merchant object after saving
+
+        res.send({ message: "Category added successfully" });
+    } catch (error) {
+        console.error(error);
+        throw new Error("Internal Server Error");
+    }
+};
+
+
+const getStatisticsAboutCategory = async (req, res) =>{
+    const email = req.params.email;
+        const cartCategory = req.body.cartCategory;
+        let numbers = req.body.forMostViewed;
+        // Find the merchant by email
+        const merchant = await Merchants.findOne({ email: email });
+        
+        if (!merchant) {
+            throw new Error("Merchant not found");
+        }
+
+        // Check if forMostCategory is not an array, initialize it
+        if (!Array.isArray(merchant.forMostCategory)) {
+            merchant.forMostCategory = [{forMostViewed: 0}];
+        }
+        const temp = merchant.forMostCategory.filter(element => element.cartCategory == cartCategory);
+
+        if(temp.length == 0 ){
+            merchant.forMostCategory.push({cartCategory: cartCategory ,forMostViewed: 0});
+            merchant.markModified('forMostCategory');
+            console.log(merchant.forMostCategory);
+            const temp1 = merchant.forMostCategory.filter(element => element.cartCategory == cartCategory);
+            res.send(temp1[0]);
+        }
+        console.log(temp);
+        res.send(temp[0])
+}
+
+
+
+
 module.exports = {
     getAllUsers,
     getSingleUser,
@@ -2581,7 +2659,11 @@ module.exports = {
     deleteTask,
     sendEmailToAdmin,
     decreaseQuantityPartOne,
-    decreaseQuantityPartTwo
+    decreaseQuantityPartTwo,
+
+    // statistics
+    statisticsIncreaseNumberOfCustomerCategory,
+    getStatisticsAboutCategory
 
 
 
