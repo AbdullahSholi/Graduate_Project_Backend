@@ -203,6 +203,7 @@ router.post('/matjarcom/api/v1/admin-forgot-password', controller.adminForgotPas
 router.post('/matjarcom/api/v1/admin-reset-password/:token', controller.adminResetPassword );
 
 router.get('/matjarcom/api/v1/admin-data/:email', controller.adminData );
+router.get('/matjarcom/api/v1/admins-list', controller.adminsList );
 
 
 router.get('/matjarcom/api/v1/display-all-merchants/:email', controller.displayAllMerchants );

@@ -42,7 +42,7 @@ const adminSchema = new mongoose.Schema({
     tasks:{
         type: [mongoose.Schema.Types.Mixed],
         default: []
-    }
+    },
 
 });
 
