@@ -1142,6 +1142,14 @@ const merchantAddStoreToDatabase = async (req, res) => {
     }
 }
 
+const getSpecificStore = async (req, res)=>{
+    const email = req.params.email;
+
+    const store = await Store.findOne({});
+    const temp = store.stores.filter(element =>element.email==email);
+    res.send(temp[0]);
+}
+
 const getAllStores = async (req, res) => {
     const stores = await Store.find({});
     console.log(stores)
@@ -2630,6 +2638,7 @@ module.exports = {
     deleteCart,
     deleteCategoryConnectedToCarts,
     merchantAddStoreToDatabase,
+    getSpecificStore,
     getAllStores,
     getAllStoresForOneCategory,
     storeData,

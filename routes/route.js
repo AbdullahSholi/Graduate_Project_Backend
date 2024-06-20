@@ -111,6 +111,7 @@ router.patch("/matjarcom/api/v1/update-specific-store-categories/:email",authent
 router.delete("/matjarcom/api/v1/delete-specific-image-from-store-slider/:email",authenticateToken, controller.deleteSpecificImageFromStoreSlider)
 router.delete("/matjarcom/api/v1/delete-category-connected-to-cart/:email",authenticateToken, controller.deleteCategoryConnectedToCarts)
 router.post("/matjarcom/api/v1/merchant-add-store-to-database/:email", controller.merchantAddStoreToDatabase)
+router.get("/matjarcom/api/v1/get-specific-store/:email", controller.getSpecificStore)
 
 // Merchant add payment Information
 router.post("/matjarcom/api/v1/add-payment-informations/:email", controller.addPaymentMethod)
