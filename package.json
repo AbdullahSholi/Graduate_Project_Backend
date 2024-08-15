@@ -14,7 +14,7 @@
     "description": "",
     "dependencies": {
         "@onesignal/node-onesignal": "^5.0.0-alpha-01",
-        "axios": "^1.6.7",
+        "axios": "^1.7.4",
         "bcrypt": "^5.0.0",
         "cloudinary": "^2.0.1",
         "cors": "^2.8.5",
